@@ -20,3 +20,10 @@ class Ctx(object):
     DAY = None
     TIME = None
     STATUS = None
+
+    food_servo_index = 0
+    water_out_index = 10
+    water_in_index = 11
+    green_pump_index = 12
+    red_pump_index = 14
+    pink_pump_index = 15
