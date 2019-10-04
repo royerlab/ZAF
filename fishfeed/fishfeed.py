@@ -1,7 +1,7 @@
 import datetime
 from time import sleep
 
-from fishfeed.ctx import Ctx
+from ctx import Ctx
 
 
 def initialize():

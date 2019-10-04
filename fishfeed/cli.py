@@ -11,8 +11,8 @@ def fishfeed():
 
 @fishfeed.command()
 def run(**kwargs):
-    fishfeed.run()
-
+    # fishfeed.run()
+    pass
 
 @fishfeed.command()
 def last5(**kwargs):
