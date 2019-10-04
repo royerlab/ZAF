@@ -8,6 +8,7 @@ def initialize():
     Ctx.DAY, Ctx.TIME = datetime.datetime.today().strftime('%Y-%m-%d %H:%M:%S').split()
     Ctx.pwm.setPWMFreq(50)
 
+
 def prepare():
     # put food
     for i in range(500, 1500, 20):
@@ -21,6 +22,8 @@ def prepare():
     Ctx.pwm.setPWM(Ctx.water_in_index, 0, 2048)
     sleep(2.5)
     Ctx.pwm.setPWM(Ctx.water_in_index, 0, 0)
+
+    Ctx.STATUS = "FoodPrepared"
 
 
 def stream():
@@ -60,10 +63,10 @@ def run():
     # prepare food
     prepare()
 
-    # stream
+    # deliver food to containers
     stream()
 
-    # clean
+    # clean the tank
     clean()
 
     # finalize
