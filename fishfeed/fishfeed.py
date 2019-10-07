@@ -56,18 +56,21 @@ def finalize():
     print Ctx.DAY, Ctx.TIME, Ctx.STATUS
 
 
-def run():
+# def run():
+if __name__ == '__main__':
     # initialize ports
     initialize()
+    print("initialized")
 
     # prepare food
     prepare()
+    print("food prepared")
 
-    # deliver food to containers
-    stream()
-
-    # clean the tank
-    clean()
+    # # deliver food to containers
+    # stream()
+    #
+    # # clean the tank
+    # clean()
 
     # finalize
     finalize()
