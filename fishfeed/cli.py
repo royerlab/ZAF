@@ -14,6 +14,7 @@ def run(**kwargs):
     # fishfeed.run()
     pass
 
+
 @fishfeed.command()
 def last5(**kwargs):
     click.echo(5)
