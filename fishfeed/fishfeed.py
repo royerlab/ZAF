@@ -1,12 +1,16 @@
 import datetime
 from time import sleep
 
+from RPi import GPIO
+
 from ctx import Ctx
 
 
 def initialize():
     Ctx.DAY, Ctx.TIME = datetime.datetime.today().strftime('%Y-%m-%d %H:%M:%S').split()
     Ctx.pwm.setPWMFreq(50)
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setup(Ctx.water_out_index, GPIO.OUT)
 
 
 def prepare():
@@ -28,13 +32,10 @@ def prepare():
 
 def stream():
     # put water
-    Ctx.pwm.setPWM(Ctx.green_pump_index, 0, 2048)
-    Ctx.pwm.setPWM(Ctx.pink_pump_index, 0, 2048)
-    Ctx.pwm.setPWM(Ctx.red_pump_index, 0, 2048)
-    sleep(2.5)
-    Ctx.pwm.setPWM(Ctx.green_pump_index, 0, 0)
-    Ctx.pwm.setPWM(Ctx.pink_pump_index, 0, 0)
-    Ctx.pwm.setPWM(Ctx.red_pump_index, 0, 0)
+    while True:
+        GPIO.output(Ctx.water_out_index, GPIO.HIGH)
+        sleep(2.5)
+        GPIO.output(Ctx.water_out_index, GPIO.LOW)
 
 
 def clean():
@@ -63,11 +64,12 @@ if __name__ == '__main__':
     print("initialized")
 
     # prepare food
-    prepare()
-    print("food prepared")
+    # prepare()
+    # print("food prepared")
 
     # # deliver food to containers
-    # stream()
+    stream()
+    print("food water mix streamed")
     #
     # # clean the tank
     # clean()

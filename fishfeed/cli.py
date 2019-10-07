@@ -12,7 +12,7 @@ def fishfeed():
 @fishfeed.command()
 def run(**kwargs):
     # fishfeed.run()
-    # pass
+    pass
 
 
 @fishfeed.command()
