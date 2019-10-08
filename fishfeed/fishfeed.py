@@ -17,7 +17,7 @@ def initialize():
 
 
 def prepare():
-    # put food
+    # pour food into fishfeeder
     for i in range(500, 1500, 20):
         Ctx.pwm.setServoPulse(Ctx.food_servo_index, i)
         sleep(0.02)
@@ -25,7 +25,7 @@ def prepare():
     for i in range(1500, 500, -20):
         Ctx.pwm.setServoPulse(Ctx.food_servo_index, i)
         sleep(0.02)
-    # put water
+    # bring clean water to fishfeeder
     # GPIO.output(Ctx.water_in_index, GPIO.HIGH)
     # sleep(0.5)
     # GPIO.output(Ctx.water_in_index, GPIO.LOW)
@@ -34,7 +34,7 @@ def prepare():
 
 
 def stream():
-    # put water
+    # stream water to fish tanks
     for _ in range(1):
         GPIO.output(Ctx.water_out_index, GPIO.HIGH)
         sleep(0.5)
@@ -43,12 +43,12 @@ def stream():
 
 def clean():
     for _ in range(2):
-        # put water
+        # bring clean water to fishfeeder
         GPIO.output(Ctx.water_in_index, GPIO.HIGH)
         sleep(0.5)
         GPIO.output(Ctx.water_in_index, GPIO.LOW)
 
-        # thrash water
+        # thrash water from fishfeeder
         GPIO.output(Ctx.water_out_index, GPIO.HIGH)
         sleep(0.5)
         GPIO.output(Ctx.water_out_index, GPIO.LOW)
