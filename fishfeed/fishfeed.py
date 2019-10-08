@@ -26,9 +26,9 @@ def prepare():
         Ctx.pwm.setServoPulse(Ctx.food_servo_index, i)
         sleep(0.02)
     # put water
-    # Ctx.pwm.setPWM(Ctx.water_in_index, 0, 2048)
-    # sleep(2.5)
-    # Ctx.pwm.setPWM(Ctx.water_in_index, 0, 0)
+    # GPIO.output(Ctx.water_in_index, GPIO.HIGH)
+    # sleep(0.5)
+    # GPIO.output(Ctx.water_in_index, GPIO.LOW)
 
     Ctx.STATUS = "FoodPrepared"
 
@@ -44,14 +44,14 @@ def stream():
 def clean():
     for _ in range(2):
         # put water
-        Ctx.pwm.setPWM(Ctx.water_in_index, 0, 2048)
+        GPIO.output(Ctx.water_in_index, GPIO.HIGH)
         sleep(0.5)
-        Ctx.pwm.setPWM(Ctx.water_in_index, 0, 0)
+        GPIO.output(Ctx.water_in_index, GPIO.LOW)
 
         # thrash water
-        Ctx.pwm.setPWM(Ctx.water_out_index, 0, 2048)
+        GPIO.output(Ctx.water_out_index, GPIO.HIGH)
         sleep(0.5)
-        Ctx.pwm.setPWM(Ctx.water_out_index, 0, 0)
+        GPIO.output(Ctx.water_out_index, GPIO.LOW)
 
     Ctx.STATUS = "Cleaned"
 
