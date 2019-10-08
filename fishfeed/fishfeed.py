@@ -57,6 +57,10 @@ def clean():
 
 
 def finalize():
+    GPIO.output(Ctx.water_in_index, GPIO.LOW)
+    GPIO.output(Ctx.water_out_index, GPIO.LOW)
+    GPIO.output(Ctx.air_index, GPIO.LOW)
+    GPIO.output(Ctx.safety_index, GPIO.LOW)
     print Ctx.DAY, Ctx.TIME, Ctx.STATUS
 
 
