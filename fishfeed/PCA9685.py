@@ -27,6 +27,7 @@ class PCA9685:
 
     def __init__(self, address=0x40, debug=False):
         self.bus = smbus.SMBus(1)
+        time.sleep(1)  # This is needed to avoid a remote I/O error
         self.address = address
         self.debug = debug
         if (self.debug):

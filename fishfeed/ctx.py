@@ -14,7 +14,7 @@ class Singleton(type):
 
 class Ctx(object):
     __metaclass__ = Singleton
-    camera = PiCamera()
+    # camera = PiCamera()
     pwm = PCA9685(0x40, debug=False)
 
     DAY = None
@@ -25,7 +25,7 @@ class Ctx(object):
     food_servo_index = 0
 
     # These are GPIO
-    water_out_index = 20
-    water_in_index = 26
+    water_out_index = 21
+    water_in_index = 19
     air_index = 20
-    safety_index = 21
+    safety_index = 26
