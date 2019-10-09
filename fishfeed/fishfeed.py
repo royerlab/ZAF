@@ -14,6 +14,8 @@ def initialize():
     GPIO.setup(Ctx.safety_index, GPIO.OUT)
     GPIO.setup(Ctx.water_out_index, GPIO.OUT)
     GPIO.setup(Ctx.air_index, GPIO.OUT)
+    # air on
+    GPIO.output(Ctx.air_index, GPIO.HIGH)
 
 
 def prepare():
@@ -26,28 +28,30 @@ def prepare():
         Ctx.pwm.setServoPulse(Ctx.food_servo_index, i)
         sleep(0.02)
     # bring clean water to fishfeeder
-    # GPIO.output(Ctx.water_in_index, GPIO.HIGH)
-    # sleep(0.5)
-    # GPIO.output(Ctx.water_in_index, GPIO.LOW)
+    for _ in range(20):
+        GPIO.output(Ctx.water_in_index, GPIO.HIGH)
+        sleep(0.5)
+        GPIO.output(Ctx.water_in_index, GPIO.LOW)
 
     Ctx.STATUS = "FoodPrepared"
 
 
 def stream():
     # stream water to fish tanks
-    for _ in range(1):
+    for _ in range(30):
         GPIO.output(Ctx.water_out_index, GPIO.HIGH)
         sleep(0.5)
         GPIO.output(Ctx.water_out_index, GPIO.LOW)
 
 
 def clean():
-    for _ in range(2):
+    for _ in range(10):
         # bring clean water to fishfeeder
         GPIO.output(Ctx.water_in_index, GPIO.HIGH)
         sleep(0.5)
         GPIO.output(Ctx.water_in_index, GPIO.LOW)
 
+    for _ in range(15):
         # thrash water from fishfeeder
         GPIO.output(Ctx.water_out_index, GPIO.HIGH)
         sleep(0.5)
@@ -61,6 +65,7 @@ def finalize():
     GPIO.output(Ctx.water_out_index, GPIO.LOW)
     GPIO.output(Ctx.air_index, GPIO.LOW)
     GPIO.output(Ctx.safety_index, GPIO.LOW)
+
     print Ctx.DAY, Ctx.TIME, Ctx.STATUS
 
 
@@ -74,10 +79,10 @@ if __name__ == '__main__':
     prepare()
     print("food prepared")
 
-    # # deliver food to containers
-    stream()
-    print("food water mix streamed")
-    #
+    # deliver food to containers
+    # stream()
+    # print("food water mix streamed")
+
     # # clean the tank
     # clean()
 

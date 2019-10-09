@@ -22,10 +22,9 @@ class Ctx(object):
     STATUS = None
 
     # this is not GPIO pin
-    food_servo_index = 0
-
+    food_servo_index = 9
     # These are GPIO
     water_out_index = 21
-    water_in_index = 19
-    air_index = 20
-    safety_index = 26
+    water_in_index = 20
+    air_index = 19
+    safety_index = 2
