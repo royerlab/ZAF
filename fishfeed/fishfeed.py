@@ -24,8 +24,11 @@ def initialize():
     GPIO.setup(Ctx.water_out_index, GPIO.OUT)
     GPIO.setup(Ctx.air_index, GPIO.OUT)
 
-    # air on
+    # air and safety on
     GPIO.output(Ctx.air_index, GPIO.HIGH)
+    GPIO.output(Ctx.safety_index, GPIO.HIGH)
+    sleep(1)
+    GPIO.output(Ctx.safety_index, GPIO.LOW)
 
 
 def prepare():

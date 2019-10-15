@@ -19,10 +19,9 @@ class Ctx(object):
     TIME = None
     STATUS = None
 
-    # this is not GPIO pin
+    # These are GPIO - BCM
     food_servo_index = 17
-    # These are GPIO
     water_out_index = 21
     water_in_index = 20
     air_index = 19
-    safety_index = 2
+    safety_index = 27
