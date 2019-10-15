@@ -7,25 +7,35 @@ from ctx import Ctx
 
 
 def initialize():
+    # Set day and time to keep log
     Ctx.DAY, Ctx.TIME = datetime.datetime.today().strftime('%Y-%m-%d %H:%M:%S').split()
-    Ctx.pwm.setPWMFreq(50)
+
+    # Set pin layout indices to BCM mode
     GPIO.setmode(GPIO.BCM)
+
+    # Initialize food servo
+    GPIO.setup(Ctx.food_servo_index, GPIO.OUT)
+    Ctx.pwm = GPIO.PWM(Ctx.food_servo_index, 50)  # GPIO 17 for PWM with 50Hz
+    Ctx.pwm.start(2.5)  # Initialization of the food servo
+
+    # Initialize all pumps
     GPIO.setup(Ctx.water_in_index, GPIO.OUT)
     GPIO.setup(Ctx.safety_index, GPIO.OUT)
     GPIO.setup(Ctx.water_out_index, GPIO.OUT)
     GPIO.setup(Ctx.air_index, GPIO.OUT)
+
     # air on
     GPIO.output(Ctx.air_index, GPIO.HIGH)
 
 
 def prepare():
     # pour food into fishfeeder
-    for i in range(500, 1500, 20):
-        Ctx.pwm.setServoPulse(Ctx.food_servo_index, i)
+    for i in range(0, 25, 1):
+        Ctx.pwm.ChangeDutyCycle(i)
         sleep(0.02)
 
-    for i in range(1500, 500, -20):
-        Ctx.pwm.setServoPulse(Ctx.food_servo_index, i)
+    for i in range(25, 0, -1):
+        Ctx.pwm.ChangeDutyCycle(i)
         sleep(0.02)
     # bring clean water to fishfeeder
     for _ in range(20):
@@ -76,8 +86,8 @@ if __name__ == '__main__':
     print("initialized")
 
     # prepare food
-    prepare()
-    print("food prepared")
+    # prepare()
+    # print("food prepared")
 
     # deliver food to containers
     # stream()

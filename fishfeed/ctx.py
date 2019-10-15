@@ -1,7 +1,5 @@
 from picamera import PiCamera
 
-from PCA9685 import PCA9685
-
 
 class Singleton(type):
     _instances = {}
@@ -15,14 +13,14 @@ class Singleton(type):
 class Ctx(object):
     __metaclass__ = Singleton
     # camera = PiCamera()
-    pwm = PCA9685(0x40, debug=False)
+    pwm = None
 
     DAY = None
     TIME = None
     STATUS = None
 
     # this is not GPIO pin
-    food_servo_index = 9
+    food_servo_index = 17
     # These are GPIO
     water_out_index = 21
     water_in_index = 20
