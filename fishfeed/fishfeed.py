@@ -55,7 +55,7 @@ def prepare():
 def stream():
     # stream water to fish tanks
     for i in range(1):
-        for _ in range(25):
+        for _ in range(30):
             GPIO.output(Ctx.water_out1_index, GPIO.HIGH)
             GPIO.output(Ctx.water_out2_index, GPIO.HIGH)
             sleep(0.5)
@@ -64,36 +64,42 @@ def stream():
 
 
     # bring water and stream fishfeeder
-    for _ in range(2):
-            for _ in range(10):
+    for _ in range(5):
+            for _ in range(3):
                 GPIO.output(Ctx.water_in_index, GPIO.HIGH)
                 sleep(0.5)
                 GPIO.output(Ctx.water_in_index, GPIO.LOW)
 
-            sleep(3)
-
-            for _ in range(10):
+            for _ in range(5):
                 GPIO.output(Ctx.water_out1_index, GPIO.HIGH)
                 GPIO.output(Ctx.water_out2_index, GPIO.HIGH)
                 sleep(0.5)
                 GPIO.output(Ctx.water_out1_index, GPIO.LOW)
                 GPIO.output(Ctx.water_out2_index, GPIO.LOW)
 
-
-def clean():
-    for _ in range(20):
-        # bring clean water to fishfeeder
-        GPIO.output(Ctx.water_in_index, GPIO.HIGH)
-        sleep(0.5)
-        GPIO.output(Ctx.water_in_index, GPIO.LOW)
-
-    for _ in range(25):
-        # thrash water from fishfeeder
+    for _ in range(10):
         GPIO.output(Ctx.water_out1_index, GPIO.HIGH)
         GPIO.output(Ctx.water_out2_index, GPIO.HIGH)
         sleep(0.5)
         GPIO.output(Ctx.water_out1_index, GPIO.LOW)
         GPIO.output(Ctx.water_out2_index, GPIO.LOW)
+
+
+def clean():
+    for _ in range(3):
+        for _ in range(20):
+        # bring clean water to fishfeeder
+            GPIO.output(Ctx.water_in_index, GPIO.HIGH)
+            sleep(0.5)
+            GPIO.output(Ctx.water_in_index, GPIO.LOW)
+
+        for _ in range(25):
+        # thrash water from fishfeeder
+            GPIO.output(Ctx.water_out1_index, GPIO.HIGH)
+            GPIO.output(Ctx.water_out2_index, GPIO.HIGH)
+            sleep(0.5)
+            GPIO.output(Ctx.water_out1_index, GPIO.LOW)
+            GPIO.output(Ctx.water_out2_index, GPIO.LOW)
 
     Ctx.STATUS = "Cleaned"
 
