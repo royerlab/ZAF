@@ -21,7 +21,8 @@ class Ctx(object):
 
     # These are GPIO - BCM
     food_servo_index = 17
-    water_out_index = 21
+    water_out1_index = 21
+    water_out2_index = 16
     water_in_index = 20
     air_index = 19
     safety_index = 27

@@ -21,14 +21,16 @@ def initialize():
     # Initialize all pumps
     GPIO.setup(Ctx.water_in_index, GPIO.OUT)
     GPIO.setup(Ctx.safety_index, GPIO.OUT)
-    GPIO.setup(Ctx.water_out_index, GPIO.OUT)
+    GPIO.setup(Ctx.water_out1_index, GPIO.OUT)
+    GPIO.setup(Ctx.water_out2_index, GPIO.OUT)
     GPIO.setup(Ctx.air_index, GPIO.OUT)
 
     # air and safety on
     GPIO.output(Ctx.air_index, GPIO.HIGH)
-    GPIO.output(Ctx.safety_index, GPIO.HIGH)
-    sleep(1)
-    GPIO.output(Ctx.safety_index, GPIO.LOW)
+
+    # GPIO.output(Ctx.safety_index, GPIO.HIGH)
+    # sleep(1)
+    # GPIO.output(Ctx.safety_index, GPIO.LOW)
 
 
 def prepare():
@@ -40,6 +42,7 @@ def prepare():
     for i in range(25, 0, -1):
         Ctx.pwm.ChangeDutyCycle(i)
         sleep(0.02)
+
     # bring clean water to fishfeeder
     for _ in range(20):
         GPIO.output(Ctx.water_in_index, GPIO.HIGH)
@@ -51,31 +54,54 @@ def prepare():
 
 def stream():
     # stream water to fish tanks
-    for _ in range(30):
-        GPIO.output(Ctx.water_out_index, GPIO.HIGH)
-        sleep(0.5)
-        GPIO.output(Ctx.water_out_index, GPIO.LOW)
+    for i in range(1):
+        for _ in range(25):
+            GPIO.output(Ctx.water_out1_index, GPIO.HIGH)
+            GPIO.output(Ctx.water_out2_index, GPIO.HIGH)
+            sleep(0.5)
+            GPIO.output(Ctx.water_out1_index, GPIO.LOW)
+            GPIO.output(Ctx.water_out2_index, GPIO.LOW)
+
+
+    # bring water and stream fishfeeder
+    for _ in range(2):
+            for _ in range(10):
+                GPIO.output(Ctx.water_in_index, GPIO.HIGH)
+                sleep(0.5)
+                GPIO.output(Ctx.water_in_index, GPIO.LOW)
+
+            sleep(3)
+
+            for _ in range(10):
+                GPIO.output(Ctx.water_out1_index, GPIO.HIGH)
+                GPIO.output(Ctx.water_out2_index, GPIO.HIGH)
+                sleep(0.5)
+                GPIO.output(Ctx.water_out1_index, GPIO.LOW)
+                GPIO.output(Ctx.water_out2_index, GPIO.LOW)
 
 
 def clean():
-    for _ in range(10):
+    for _ in range(20):
         # bring clean water to fishfeeder
         GPIO.output(Ctx.water_in_index, GPIO.HIGH)
         sleep(0.5)
         GPIO.output(Ctx.water_in_index, GPIO.LOW)
 
-    for _ in range(15):
+    for _ in range(25):
         # thrash water from fishfeeder
-        GPIO.output(Ctx.water_out_index, GPIO.HIGH)
+        GPIO.output(Ctx.water_out1_index, GPIO.HIGH)
+        GPIO.output(Ctx.water_out2_index, GPIO.HIGH)
         sleep(0.5)
-        GPIO.output(Ctx.water_out_index, GPIO.LOW)
+        GPIO.output(Ctx.water_out1_index, GPIO.LOW)
+        GPIO.output(Ctx.water_out2_index, GPIO.LOW)
 
     Ctx.STATUS = "Cleaned"
 
 
 def finalize():
     GPIO.output(Ctx.water_in_index, GPIO.LOW)
-    GPIO.output(Ctx.water_out_index, GPIO.LOW)
+    GPIO.output(Ctx.water_out1_index, GPIO.LOW)
+    GPIO.output(Ctx.water_out2_index, GPIO.LOW)
     GPIO.output(Ctx.air_index, GPIO.LOW)
     GPIO.output(Ctx.safety_index, GPIO.LOW)
 
