@@ -84,20 +84,28 @@ def finalize():
 
 # def run():
 if __name__ == '__main__':
-    # initialize ports
-    initialize()
-    print("initialized")
 
-    # prepare food
-    # prepare()
-    # print("food prepared")
+    try:
+        # initialize ports
+        initialize()
+        print("initialized")
 
-    # deliver food to containers
-    # stream()
-    # print("food water mix streamed")
+        # prepare food
+        prepare()
+        print("food prepared")
 
-    # # clean the tank
-    # clean()
+        # deliver food to containers
+        stream()
+        print("food water mix streamed")
 
-    # finalize
-    finalize()
+        # clean the tank
+        clean()
+        print("tanks cleaned")
+
+    except KeyboardInterrupt:
+        print("\nCtrl-C pressed.  Program exiting...")
+    finally:
+        # finalize
+        finalize()
+
+        GPIO.cleanup()  # run on exit
