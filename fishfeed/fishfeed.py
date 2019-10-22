@@ -13,6 +13,12 @@ def initialize():
     # Set pin layout indices to BCM mode
     GPIO.setmode(GPIO.BCM)
 
+    # Initialize water sensor
+    GPIO.setup(Ctx.water_sensor, GPIO.OUT)
+    GPIO.output(Ctx.water_sensor, GPIO.LOW)
+    sleep(0.05)
+    GPIO.setup(Ctx.water_sensor, GPIO.IN)
+
     # Initialize food servo
     GPIO.setup(Ctx.food_servo_index, GPIO.OUT)
     Ctx.pwm = GPIO.PWM(Ctx.food_servo_index, 50)  # GPIO 17 for PWM with 50Hz
@@ -45,6 +51,7 @@ def prepare():
 
     # bring clean water to fishfeeder
     for _ in range(20):
+        check_water_sensor()
         GPIO.output(Ctx.water_in_index, GPIO.HIGH)
         sleep(0.5)
         GPIO.output(Ctx.water_in_index, GPIO.LOW)
@@ -56,6 +63,7 @@ def stream():
     # stream water to fish tanks
     for i in range(1):
         for _ in range(25):
+            check_water_sensor()
             GPIO.output(Ctx.water_out1_index, GPIO.HIGH)
             GPIO.output(Ctx.water_out2_index, GPIO.HIGH)
             sleep(0.5)
@@ -66,6 +74,7 @@ def stream():
     # bring water and stream fishfeeder
     for _ in range(2):
             for _ in range(10):
+                check_water_sensor()
                 GPIO.output(Ctx.water_in_index, GPIO.HIGH)
                 sleep(0.5)
                 GPIO.output(Ctx.water_in_index, GPIO.LOW)
@@ -73,6 +82,7 @@ def stream():
             sleep(3)
 
             for _ in range(10):
+                check_water_sensor()
                 GPIO.output(Ctx.water_out1_index, GPIO.HIGH)
                 GPIO.output(Ctx.water_out2_index, GPIO.HIGH)
                 sleep(0.5)
@@ -83,12 +93,14 @@ def stream():
 def clean():
     for _ in range(20):
         # bring clean water to fishfeeder
+        check_water_sensor()
         GPIO.output(Ctx.water_in_index, GPIO.HIGH)
         sleep(0.5)
         GPIO.output(Ctx.water_in_index, GPIO.LOW)
 
     for _ in range(25):
         # thrash water from fishfeeder
+        check_water_sensor()
         GPIO.output(Ctx.water_out1_index, GPIO.HIGH)
         GPIO.output(Ctx.water_out2_index, GPIO.HIGH)
         sleep(0.5)
@@ -106,6 +118,15 @@ def finalize():
     GPIO.output(Ctx.safety_index, GPIO.LOW)
 
     print Ctx.DAY, Ctx.TIME, Ctx.STATUS
+
+
+def check_water_sensor():
+    if GPIO.input(Ctx.water_sensor) == GPIO.LOW:
+        print("no water warning by sensor")
+        GPIO.output(Ctx.safety_index, GPIO.LOW)
+    else:
+        GPIO.output(Ctx.safety_index, GPIO.HIGH)
+        print("WATER WARNING by sensor")
 
 
 # def run():

@@ -26,3 +26,4 @@ class Ctx(object):
     water_in_index = 20
     air_index = 19
     safety_index = 27
+    water_sensor = 14
