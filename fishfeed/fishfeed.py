@@ -128,8 +128,7 @@ def check_water_sensor():
         print("WATER WARNING by sensor")
 
 
-# def run():
-if __name__ == '__main__':
+def run():
 
     try:
         # initialize ports
@@ -155,3 +154,7 @@ if __name__ == '__main__':
         finalize()
 
         GPIO.cleanup()  # run on exit
+
+
+if __name__ == '__main__':
+    run()
