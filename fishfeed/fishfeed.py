@@ -138,20 +138,21 @@ def run():
         # prepare food
         prepare()
         print("food prepared")
-
-        # deliver food to containers
-        stream()
-        print("food water mix streamed")
-
-        # clean the tank
-        clean()
-        print("tanks cleaned")
+        #
+        # # deliver food to containers
+        # stream()
+        # print("food water mix streamed")
+        #
+        # # clean the tank
+        # clean()
+        # print("tanks cleaned")
 
     except KeyboardInterrupt:
         print("\nCtrl-C pressed.  Program exiting...")
     finally:
         # finalize
         finalize()
+        print("finalized")
 
         GPIO.cleanup()  # run on exit
 

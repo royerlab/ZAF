@@ -12,7 +12,7 @@ def fishfeed():
 @fishfeed.command()
 def run(**kwargs):
     fishfeed.run()
-    
+
 
 @fishfeed.command()
 def last5(**kwargs):
