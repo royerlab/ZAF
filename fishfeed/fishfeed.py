@@ -160,13 +160,13 @@ def run():
         prepare()
         print("food prepared")
         #
-        # # deliver food to containers
-        # stream()
-        # print("food water mix streamed")
-        #
-        # # clean the tank
-        # clean()
-        # print("tanks cleaned")
+        # deliver food to containers
+        stream()
+        print("food water mix streamed")
+
+        # clean the tank
+        clean()
+        print("tanks cleaned")
 
     except KeyboardInterrupt:
         print("\nCtrl-C pressed.  Program exiting...")
