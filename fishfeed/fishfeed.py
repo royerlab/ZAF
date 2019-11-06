@@ -28,36 +28,20 @@ def initialize():
     GPIO.setup(Ctx.water_in_high, GPIO.OUT)
     GPIO.output(Ctx.water_in_high, GPIO.LOW)
 
-    GPIO.setup(Ctx.water_in_low, GPIO.OUT)
-    GPIO.output(Ctx.water_in_low, GPIO.LOW)
-
     GPIO.setup(Ctx.safety_pump_high, GPIO.OUT)
     GPIO.output(Ctx.water_in_high, GPIO.LOW)
-
-    GPIO.setup(Ctx.safety_pump_low, GPIO.OUT)
-    GPIO.output(Ctx.safety_pump_low, GPIO.LOW)
 
     GPIO.setup(Ctx.water_out1_high, GPIO.OUT)
     GPIO.output(Ctx.water_out1_high, GPIO.LOW)
 
-    GPIO.setup(Ctx.water_out1_low, GPIO.OUT)
-    GPIO.output(Ctx.water_out1_low, GPIO.LOW)
-
     GPIO.setup(Ctx.water_out2_high, GPIO.OUT)
     GPIO.output(Ctx.water_out2_high, GPIO.LOW)
-
-    GPIO.setup(Ctx.water_out2_low, GPIO.OUT)
-    GPIO.output(Ctx.water_out2_low, GPIO.LOW)
 
     GPIO.setup(Ctx.air_pump_high, GPIO.OUT)
     GPIO.output(Ctx.air_pump_high, GPIO.LOW)
 
-    GPIO.setup(Ctx.air_pump_low, GPIO.OUT)
-    GPIO.output(Ctx.air_pump_low, GPIO.LOW)
-
     # air and safety on
     GPIO.output(Ctx.air_pump_high, GPIO.HIGH)
-    GPIO.output(Ctx.air_pump_low, GPIO.LOW)
 
 
 def prepare():
