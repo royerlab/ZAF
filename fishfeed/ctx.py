@@ -19,22 +19,17 @@ class Ctx(object):
     TIME = None
     STATUS = None
 
-    # These are GPIO - BCM
-    food_servo_index = 17
+    # These are servo hat indices
+    water_out1 = 13
+    water_out2 = 12
 
-    water_out1_high = 21
-    water_out1_low = 26  # random value for now
+    water_in = 9
+    water_in_valve = 8
 
-    water_out2_high = 20
-    water_out2_low = 19  # random value for now
+    air_pump = 5
+    safety_pump = 4
 
-    water_in_high = 16
-    water_in_low = 13
+    food_servo_index = 0
 
-    air_pump_high = 19
-    air_pump_low = 5
-
-    safety_pump_high = 12
-    safety_pump_low = 9
-
-    water_sensor = 14
+    # This will be GPIO BCM
+    water_sensor = 14  # not connected to GPIO yet

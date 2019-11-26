@@ -4,6 +4,7 @@ from time import sleep
 from RPi import GPIO
 
 from ctx import Ctx
+from PCA9685 import PCA9685
 
 
 def initialize():
@@ -19,47 +20,30 @@ def initialize():
     sleep(0.05)
     GPIO.setup(Ctx.water_sensor, GPIO.IN)
 
-    # Initialize food servo
-    GPIO.setup(Ctx.food_servo_index, GPIO.OUT)
-    Ctx.pwm = GPIO.PWM(Ctx.food_servo_index, 50)  # GPIO 17 for PWM with 50Hz
-    Ctx.pwm.start(2.5)  # Initialization of the food servo
-
-    # Initialize all pumps
-    GPIO.setup(Ctx.water_in_high, GPIO.OUT)
-    GPIO.output(Ctx.water_in_high, GPIO.LOW)
-
-    GPIO.setup(Ctx.safety_pump_high, GPIO.OUT)
-    GPIO.output(Ctx.water_in_high, GPIO.LOW)
-
-    GPIO.setup(Ctx.water_out1_high, GPIO.OUT)
-    GPIO.output(Ctx.water_out1_high, GPIO.LOW)
-
-    GPIO.setup(Ctx.water_out2_high, GPIO.OUT)
-    GPIO.output(Ctx.water_out2_high, GPIO.LOW)
-
-    GPIO.setup(Ctx.air_pump_high, GPIO.OUT)
-    GPIO.output(Ctx.air_pump_high, GPIO.LOW)
+    # Initialize
+    Ctx.pwm = PCA9685(0x40, debug=False)
+    Ctx.pwm.setPWMFreq(50)
 
     # air and safety on
-    GPIO.output(Ctx.air_pump_high, GPIO.HIGH)
+    Ctx.pwm.setPWM(Ctx.air_pump, 0, 4095)
 
 
 def prepare():
     # pour food into fishfeeder
-    for i in range(0, 25, 1):
-        Ctx.pwm.ChangeDutyCycle(i)
+    for i in range(500, 1700, 30):
+        Ctx.pwm.setServoPulse(0, i)
         sleep(0.02)
 
-    for i in range(25, 0, -1):
-        Ctx.pwm.ChangeDutyCycle(i)
+    for i in range(1700, 500, -30):
+        Ctx.pwm.setServoPulse(0, i)
         sleep(0.02)
 
     # bring clean water to fishfeeder
     for _ in range(20):
         check_water_sensor()
-        GPIO.output(Ctx.water_in_high, GPIO.HIGH)
+        Ctx.pwm.setPWM(Ctx.water_in, 0, 4095)
         sleep(0.5)
-        GPIO.output(Ctx.water_in_high, GPIO.LOW)
+        Ctx.pwm.setPWM(Ctx.water_in, 0, 0)
 
     Ctx.STATUS = "FoodPrepared"
 
@@ -69,28 +53,27 @@ def stream():
     for i in range(1):
         for _ in range(30):
             check_water_sensor()
-            GPIO.output(Ctx.water_out1_high, GPIO.HIGH)
-            GPIO.output(Ctx.water_out2_high, GPIO.HIGH)
+            Ctx.pwm.setPWM(Ctx.water_out1, 0, 4095)
+            Ctx.pwm.setPWM(Ctx.water_out2, 0, 4095)
             sleep(0.5)
-            GPIO.output(Ctx.water_out1_high, GPIO.LOW)
-            GPIO.output(Ctx.water_out2_high, GPIO.LOW)
-
+            Ctx.pwm.setPWM(Ctx.water_out1, 0, 0)
+            Ctx.pwm.setPWM(Ctx.water_out2, 0, 0)
 
     # bring water and stream fishfeeder
     for _ in range(5):
             for _ in range(3):
                 check_water_sensor()
-                GPIO.output(Ctx.water_in_high, GPIO.HIGH)
+                Ctx.pwm.setPWM(Ctx.water_in, 0, 4095)
                 sleep(0.5)
-                GPIO.output(Ctx.water_in_high, GPIO.LOW)
+                Ctx.pwm.setPWM(Ctx.water_in, 0, 0)
 
             for _ in range(5):
                 check_water_sensor()
-                GPIO.output(Ctx.water_out1_high, GPIO.HIGH)
-                GPIO.output(Ctx.water_out2_high, GPIO.HIGH)
+                Ctx.pwm.setPWM(Ctx.water_out1, 0, 4095)
+                Ctx.pwm.setPWM(Ctx.water_out2, 0, 4095)
                 sleep(0.5)
-                GPIO.output(Ctx.water_out1_high, GPIO.LOW)
-                GPIO.output(Ctx.water_out2_high, GPIO.LOW)
+                Ctx.pwm.setPWM(Ctx.water_out1, 0, 0)
+                Ctx.pwm.setPWM(Ctx.water_out2, 0, 0)
 
 
 def clean():
@@ -98,28 +81,28 @@ def clean():
         for _ in range(20):
         # bring clean water to fishfeeder
             check_water_sensor()
-            GPIO.output(Ctx.water_in_high, GPIO.HIGH)
+            Ctx.pwm.setPWM(Ctx.water_in, 0, 4095)
             sleep(0.5)
-            GPIO.output(Ctx.water_in_high, GPIO.LOW)
+            Ctx.pwm.setPWM(Ctx.water_in, 0, 0)
 
         for _ in range(25):
         # thrash water from fishfeeder
             check_water_sensor()
-            GPIO.output(Ctx.water_out1_high, GPIO.HIGH)
-            GPIO.output(Ctx.water_out2_high, GPIO.HIGH)
+            Ctx.pwm.setPWM(Ctx.water_out1, 0, 4095)
+            Ctx.pwm.setPWM(Ctx.water_out2, 0, 4095)
             sleep(0.5)
-            GPIO.output(Ctx.water_out1_high, GPIO.LOW)
-            GPIO.output(Ctx.water_out2_high, GPIO.LOW)
+            Ctx.pwm.setPWM(Ctx.water_out1, 0, 0)
+            Ctx.pwm.setPWM(Ctx.water_out2, 0, 0)
 
     Ctx.STATUS = "Cleaned"
 
 
 def finalize():
-    GPIO.output(Ctx.water_in_high, GPIO.LOW)
-    GPIO.output(Ctx.water_out1_high, GPIO.LOW)
-    GPIO.output(Ctx.water_out2_high, GPIO.LOW)
-    GPIO.output(Ctx.air_pump_high, GPIO.LOW)
-    GPIO.output(Ctx.safety_pump_high, GPIO.LOW)
+    Ctx.pwm.setPWM(Ctx.water_in, 0, 0)
+    Ctx.pwm.setPWM(Ctx.water_out1, 0, 0)
+    Ctx.pwm.setPWM(Ctx.water_out2, 0, 0)
+    Ctx.pwm.setPWM(Ctx.air_pump, 0, 0)
+    Ctx.pwm.setPWM(Ctx.safety_pump, 0, 0)
 
     print Ctx.DAY, Ctx.TIME, Ctx.STATUS
 
@@ -127,9 +110,9 @@ def finalize():
 def check_water_sensor():
     if GPIO.input(Ctx.water_sensor) == GPIO.LOW:
         print("no water warning by sensor")
-        GPIO.output(Ctx.safety_pump_high, GPIO.LOW)
+        Ctx.pwm.setPWM(Ctx.safety_pump, 0, 0)
     else:
-        GPIO.output(Ctx.safety_pump_high, GPIO.HIGH)
+        Ctx.pwm.setPWM(Ctx.safety_pump, 0, 4095)
         print("WATER WARNING by sensor")
 
 
@@ -143,7 +126,7 @@ def run():
         # prepare food
         prepare()
         print("food prepared")
-        #
+
         # deliver food to containers
         stream()
         print("food water mix streamed")
