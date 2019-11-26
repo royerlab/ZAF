@@ -19,12 +19,14 @@ class Ctx(object):
     TIME = None
     STATUS = None
 
+
+
     # These are servo hat indices
     water_out1 = 13
     water_out2 = 12
 
     water_in = 9
-    water_in_valve = 8
+    water_in_solenoid = 8
 
     air_pump = 5
     safety_pump = 4

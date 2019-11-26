@@ -27,6 +27,8 @@ def initialize():
     # air and safety on
     Ctx.pwm.setPWM(Ctx.air_pump, 0, 4095)
 
+    # solenoid open
+    Ctx.pwm.setPWM(Ctx.water_in_solenoid, 0, 4095)
 
 def prepare():
     # pour food into fishfeeder
@@ -103,6 +105,8 @@ def finalize():
     Ctx.pwm.setPWM(Ctx.water_out2, 0, 0)
     Ctx.pwm.setPWM(Ctx.air_pump, 0, 0)
     Ctx.pwm.setPWM(Ctx.safety_pump, 0, 0)
+    # solenoid close
+    Ctx.pwm.setPWM(Ctx.water_in_solenoid, 0, 0)
 
     print Ctx.DAY, Ctx.TIME, Ctx.STATUS
 
