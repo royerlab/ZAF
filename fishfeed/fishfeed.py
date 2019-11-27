@@ -30,6 +30,24 @@ def initialize():
     # solenoid open
     Ctx.pwm.setPWM(Ctx.water_in_solenoid, 0, 4095)
 
+def priming ():
+    # prime wateter In
+    for _ in range(30):
+        check_water_sensor()
+        Ctx.pwm.setPWM(Ctx.water_in, 0, 4095)
+        sleep(0.5)
+        Ctx.pwm.setPWM(Ctx.water_in, 0, 0)
+
+    # prime water Out
+    for _ in range(20):
+        check_water_sensor()
+        Ctx.pwm.setPWM(Ctx.water_out1, 0, 4095)
+        Ctx.pwm.setPWM(Ctx.water_out2, 0, 4095)
+        sleep(0.5)
+        Ctx.pwm.setPWM(Ctx.water_out1, 0, 0)
+        Ctx.pwm.setPWM(Ctx.water_out2, 0, 0)
+
+
 def prepare():
     # pour food into fishfeeder
     for i in range(500, 1700, 30):
@@ -41,7 +59,7 @@ def prepare():
         sleep(0.02)
 
     # bring clean water to fishfeeder
-    for _ in range(20):
+    for _ in range(30):
         check_water_sensor()
         Ctx.pwm.setPWM(Ctx.water_in, 0, 4095)
         sleep(0.5)
@@ -127,17 +145,21 @@ def run():
         initialize()
         print("initialized")
 
+        # priming pumps
+        priming()
+        print("pumps primed")
+
         # prepare food
         prepare()
         print("food prepared")
-
-        # deliver food to containers
-        stream()
-        print("food water mix streamed")
-
-        # clean the tank
-        clean()
-        print("tanks cleaned")
+        #
+        # # deliver food to containers
+        # stream()
+        # print("food water mix streamed")
+        #
+        # # clean the tank
+        # clean()
+        # print("tanks cleaned")
 
     except KeyboardInterrupt:
         print("\nCtrl-C pressed.  Program exiting...")
