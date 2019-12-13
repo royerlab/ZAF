@@ -34,4 +34,4 @@ class Ctx(object):
     food_servo_index = 0
 
     # This will be GPIO BCM
-    water_sensor = 14  # not connected to GPIO yet
+    water_sensor = 14
