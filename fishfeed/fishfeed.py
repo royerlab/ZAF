@@ -8,7 +8,6 @@ from PCA9685 import PCA9685
 
 
 def initialize():
-    # Set day and time to keep log
     Ctx.DAY, Ctx.TIME = datetime.datetime.today().strftime('%Y-%m-%d %H:%M:%S').split()
 
     # Set pin layout indices to BCM mode
@@ -32,14 +31,14 @@ def initialize():
 
 def priming ():
     # prime wateter In
-    for _ in range(1):
+    for _ in range(12):
         check_water_sensor()
         Ctx.pwm.setPWM(Ctx.water_in, 0, 4095)
         sleep(0.5)
         Ctx.pwm.setPWM(Ctx.water_in, 0, 0)
 
     # prime water Out
-    for _ in range(50):
+    for _ in range(5):
         check_water_sensor()
         Ctx.pwm.setPWM(Ctx.water_out1, 0, 4095)
         Ctx.pwm.setPWM(Ctx.water_out2, 0, 4095)
@@ -81,7 +80,7 @@ def stream():
 
     # bring water and stream fishfeeder
     for _ in range(2):
-            for _ in range(15):
+            for _ in range(14):
                 check_water_sensor()
                 Ctx.pwm.setPWM(Ctx.water_in, 0, 4095)
                 sleep(0.5)
@@ -97,7 +96,7 @@ def stream():
 
 
 def clean():
-    for _ in range(15):
+    for _ in range(12):
         # bring clean water to fishfeeder
         check_water_sensor()
         Ctx.pwm.setPWM(Ctx.water_in, 0, 4095)
@@ -181,18 +180,18 @@ def run():
         # priming pumps
         priming()
         print("pumps primed")
-        #
-        # # prepare food
-        # prepare()
-        # print("food prepared")
-        #
-        # # deliver food to containers
-        # stream()
-        # print("food water mix streamed")
-        #
-        # # clean the tank
-        # clean()
-        # print("tanks cleaned")
+
+        # prepare food
+        prepare()
+        print("food prepared")
+
+        # deliver food to containers
+        stream()
+        print("food water mix streamed")
+
+        # clean the tank
+        clean()
+        print("tanks cleaned")
 
     except KeyboardInterrupt:
         print("\nCtrl-C pressed.  Program exiting...")
