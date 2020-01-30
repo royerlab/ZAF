@@ -31,7 +31,7 @@ def initialize():
 
 def priming ():
     # prime wateter In
-    for _ in range(12):
+    for _ in range(10):
         check_water_sensor()
         Ctx.pwm.setPWM(Ctx.water_in, 0, 4095)
         sleep(0.5)
@@ -58,7 +58,7 @@ def prepare():
         sleep(0.02)
 
     # bring clean water to fishfeeder
-    for _ in range(14):
+    for _ in range(10):
         check_water_sensor()
         Ctx.pwm.setPWM(Ctx.water_in, 0, 4095)
         sleep(0.5)
@@ -80,13 +80,13 @@ def stream():
 
     # bring water and stream fishfeeder
     for _ in range(2):
-            for _ in range(14):
+            for _ in range(8):
                 check_water_sensor()
                 Ctx.pwm.setPWM(Ctx.water_in, 0, 4095)
                 sleep(0.5)
                 Ctx.pwm.setPWM(Ctx.water_in, 0, 0)
 
-            for _ in range(6):
+            for _ in range(4):
                 check_water_sensor()
                 Ctx.pwm.setPWM(Ctx.water_out1, 0, 4095)
                 Ctx.pwm.setPWM(Ctx.water_out2, 0, 4095)
@@ -96,14 +96,14 @@ def stream():
 
 
 def clean():
-    for _ in range(12):
+    for _ in range(11):
         # bring clean water to fishfeeder
         check_water_sensor()
         Ctx.pwm.setPWM(Ctx.water_in, 0, 4095)
         sleep(0.5)
         Ctx.pwm.setPWM(Ctx.water_in, 0, 0)
 
-    for _ in range(5):
+    for _ in range(6):
         # thrash water from fishfeeder
         check_water_sensor()
         Ctx.pwm.setPWM(Ctx.water_out1, 0, 4095)
@@ -113,14 +113,14 @@ def clean():
         Ctx.pwm.setPWM(Ctx.water_out2, 0, 0)
 
     for _ in range(3):
-        for _ in range(15):
+        for _ in range(10):
         # bring clean water to fishfeeder
             check_water_sensor()
             Ctx.pwm.setPWM(Ctx.water_in, 0, 4095)
             sleep(0.5)
             Ctx.pwm.setPWM(Ctx.water_in, 0, 0)
 
-        for _ in range(7):
+        for _ in range(5):
         # thrash water from fishfeeder
             check_water_sensor()
             Ctx.pwm.setPWM(Ctx.water_out1, 0, 4095)
@@ -130,14 +130,14 @@ def clean():
             Ctx.pwm.setPWM(Ctx.water_out2, 0, 0)
 
     for _ in range(3):
-         for _ in range(14):
+         for _ in range(10):
                 # bring clean water to fishfeeder
                 check_water_sensor()
                 Ctx.pwm.setPWM(Ctx.water_in, 0, 4095)
                 sleep(0.5)
                 Ctx.pwm.setPWM(Ctx.water_in, 0, 0)
 
-         for _ in range(7):
+         for _ in range(5):
                 # thrash water from fishfeeder
                 check_water_sensor()
                 Ctx.pwm.setPWM(Ctx.water_out1, 0, 4095)
