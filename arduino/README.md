@@ -57,13 +57,13 @@ Integer numbers must be surrounded by some whitespace for delimitation
     Returns the current state of the ControlBox. 
     For example,for two arduinos chained, the result is:
     
-    |c|o|c|c|c|c|c|c|c|c|c|c|c|c|c||0|0|0|0|255|0|0|0|0|0|done!
+    |c|o|c|c|c|c|c|c|c|c|c|c|c|c|c||0|0|0|0|1|0|0|0|0|0|done!
     |o|c|c|c|c|c|c|c|c|c|c|c|c|c|c||0|0|0|0|0|0|0|0|0|0|done!
     
     Where we can see that (second) valve 1 of the first arduino (first line)
      is open, and the (first) valve 0 of the second arduino (second line) is
      open. Also, the 5th PWM channel (index=4) of the first arduino is set at 
-     the max value of 255. 
+     a non zero value (for now we cannot know the exact value, only if it is 'on'). 
      
     '#!\n' 
     Shutsdown all valves and all PWMs and brings back all servos to position 
