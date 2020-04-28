@@ -34,7 +34,7 @@ The ControlBox protocol is very simple and human-writable.
 The commands are received by the first arduino in the chain 
 and if needed are forwarded recursively to the next arduinos.
 
-### valve and PWM channels:
+### Valve and PWM channels:
 
 Each Arduino has 15 relay/valve channels, the 16th channel is 
 used for the buzzer, and 10 PWM channels, of which channel 5 is 
@@ -49,10 +49,11 @@ across all Arduinos ths offering a unified indexing.
 Commands always start with the character: '#' and end with '\n'.
 A successfully parsed command causes a return message of 'done!\n'.
 Integer numbers must be surrounded by some whitespace for delimitation 
-(quite flexible n the type and number of whitespaces).
+(quite flexible in the type and number of whitespaces).
 
 ### Command list:
 
+    .
     '#?\n'
     Returns the current state of the ControlBox. 
     For example,for two arduinos chained, the result is:
@@ -87,7 +88,9 @@ Integer numbers must be surrounded by some whitespace for delimitation
     Opens (S='o') or closes (S='c') valve at index I. 
     
     '#p I S \n' 
-    Sets the PWM value (or servo angle) of PWM channel I to  value S.
+    Sets the PWM value (or servo angle) of PWM channel I to value S.
+    S is an integer in the interval [0, 255], except for channel 5 (modulo 10)
+    fro which the value S must be in the interval [0, 180] (angles).
      
     Unrecognised commands are ignored (in debug mode a notification is sent.).
     
