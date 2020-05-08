@@ -31,7 +31,7 @@ class ControlBox:
         print(rcv)
 
     def open_valve(self, index):
-        open_valve_command = str.encode("#vo" + " " + str(index) + " \n")
+        open_valve_command = str.encode(f"#vo {index} \n")
 
         self.conn.write(open_valve_command)
         rcv = self.conn.read(6)
@@ -39,7 +39,7 @@ class ControlBox:
         sleep(1)
 
     def close_valve(self, index):
-        close_valve_command = str.encode("#vc" + " " + str(index) + " \n")
+        close_valve_command = str.encode(f"#vc {index} \n")
 
         self.conn.write(close_valve_command)
         rcv = self.conn.read(6)
@@ -47,7 +47,7 @@ class ControlBox:
         sleep(1)
 
     def set_pwm(self, index, value):
-        set_pwm_command = str.encode("#p " + str(index) + " " + str(value) + "\n")
+        set_pwm_command = str.encode(f"#p {index} {value} \n")
 
         self.conn.write(set_pwm_command)
         rcv = self.conn.read(6)

@@ -1,10 +1,10 @@
 import datetime
 from time import sleep
-
 from RPi import GPIO
 
-from .ctx import Ctx
-from .PCA9685 import PCA9685
+from ctx import Ctx
+from PCA9685 import PCA9685
+
 
 def initialize():
     Ctx.DAY, Ctx.TIME = datetime.datetime.today().strftime('%Y-%m-%d %H:%M:%S').split()
