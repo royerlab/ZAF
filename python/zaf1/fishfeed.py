@@ -1,6 +1,5 @@
 import datetime
 from time import sleep
-
 from RPi import GPIO
 
 from ctx import Ctx
