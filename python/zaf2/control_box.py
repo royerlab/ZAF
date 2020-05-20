@@ -10,7 +10,19 @@ class ControlBox:
         self.rate = rate
         self.nb_arduino = nb_arduino
 
-        self.conn = serial.Serial(self.port, baudrate=self.rate, timeout=2.0)
+        try:
+            self.conn = serial.Serial(self.port, baudrate=self.rate, timeout=2.0)
+        except:
+            try:
+                self.port = "/dev/ttyACM1"
+                self.conn = serial.Serial(self.port, baudrate=self.rate, timeout=2.0)
+            except:
+                try:
+                    self.port = "/dev/ttyACM2"
+                    self.conn = serial.Serial(self.port, baudrate=self.rate, timeout=2.0)
+                except:
+                    raise ConnectionError("Couldn't connect to ControlBox")
+
         self.conn.flushInput()
 
     get_state = str.encode("#?\n")
