@@ -1,8 +1,8 @@
 from PyQt5.QtWidgets import (
     QMainWindow,
-    QDesktopWidget,
     QStatusBar)
-from widgets.tabmanager import TabManager
+
+from python.gui.widgets.tabmanager import TabManager
 
 
 class MainWindow(QMainWindow):
@@ -11,11 +11,11 @@ class MainWindow(QMainWindow):
         self.setWindowTitle('ZAF 2.0')
         self.setGeometry(0, 0, 800, 480)
         self.setFixedSize(800, 480)
-        self.content = TabManager()
-        self.setCentralWidget(self.content)
 
         self.statusBar = QStatusBar()
         self.setStatusBar(self.statusBar)
 
-        self.show()
+        self.content = TabManager(self.statusBar)
+        self.setCentralWidget(self.content)
 
+        self.show()

@@ -1,14 +1,13 @@
 from PyQt5.QtWidgets import (
     QTabWidget,
     QWidget,
-    QVBoxLayout,
     QHBoxLayout,
-    QTabBar
 )
 from PyQt5.QtCore import Qt
-from widgets.protocoltab import ProgramTab
-from widgets.dashboard import DashboardTab
-from widgets.logtab import LogTab
+
+from python.gui.widgets.tabs.dashboard import DashboardTab
+from python.gui.widgets.tabs.logtab import LogTab
+from python.gui.widgets.tabs.protocoltab import ProgramTab
 
 """
 This script creates a TabManager that manages multiple tabs.
@@ -17,8 +16,10 @@ This script creates a TabManager that manages multiple tabs.
 
 
 class TabManager(QTabWidget):
-    def __init__(self,):
+    def __init__(self, status_bar):
         super().__init__()
+        self.status_bar = status_bar
+
         self.active_tabs = []
         self.tabs = []
         for i in range(4):

@@ -5,14 +5,12 @@ from PyQt5.QtWidgets import (
     QVBoxLayout,
     QLabel,
     QGroupBox,
-    QLineEdit,
     QGridLayout,
-    QStatusBar,
 )
-from PyQt5.QtCore import Qt, QEvent
-from widgets.protocoltab import ProgramTab
 
 import csv
+
+from python.gui.widgets.tabs.protocoltab import ProgramTab
 
 
 class DashboardTab(QTabWidget):
@@ -20,7 +18,6 @@ class DashboardTab(QTabWidget):
         super().__init__()
         self.tab = tab
         self.parent = parent
-
 
         # GroupBox1 (Left half)
         # Add_program button
@@ -59,12 +56,11 @@ class DashboardTab(QTabWidget):
         # Emergency Stop
         self.button_emstop = QPushButton("Emergency\nStop", self)
         self.button_emstop.setStyleSheet("QPushButton {color: red; font: bold;}")
-        self.button_emstop.clicked.connect(lambda: self.dialogbox.setText("Emergency Stop!"))
+        self.button_emstop.clicked.connect(lambda: self.status_bar.setText("Emergency Stop!"))
         gpbox1_layout.addWidget(self.button_emstop)
 
         # GroupBox2 (Right half)
         gpbox2 = QGroupBox()
-        # gpbox2.setMinimumSize(380, 420)
         gpbox2_layout = QVBoxLayout()
         gpbox2.setLayout(gpbox2_layout)
 
@@ -87,7 +83,6 @@ class DashboardTab(QTabWidget):
         self.tab.layout.addWidget(gpbox1)
         self.tab.layout.addWidget(gpbox2)
         self.tab.setLayout(self.tab.layout)
-
 
     def update_active_pgm(self):
         self.active_prg_list = []

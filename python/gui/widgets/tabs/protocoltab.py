@@ -1,8 +1,7 @@
-from copy import copy, deepcopy
+from copy import copy
 from PyQt5.QtWidgets import (
     QPushButton,
     QButtonGroup,
-    QTabWidget,
     QVBoxLayout,
     QGroupBox,
     QLabel,
