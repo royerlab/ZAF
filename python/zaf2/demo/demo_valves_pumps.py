@@ -38,6 +38,7 @@ def demo_valves(valves):
 
 def demo_pumps(pumps, duration=0.5):
     ctx = Context()
+    Context.initialize()
     ctx.run_pump(pumps, duration=duration)
 
 
@@ -46,6 +47,6 @@ if __name__ == '__main__':
     demo_pumps(pumps=[0, 3, 5], duration=0.5)
 
     # Use the following line with list of indices to test pumps
-    demo_valves(valves=[0, 3, 5])
+    # demo_valves(valves=[0, 3, 5])
 
 
