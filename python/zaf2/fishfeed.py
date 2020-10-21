@@ -19,7 +19,11 @@ def initialize():
     GPIO.setup(Context.water_sensor, GPIO.IN)
 
 
-def priming():
+def priming(valves_in_use):
+    # Open all valves
+    for valve in valves_in_use:
+        Context.control_box.open_valve(valve)
+
     # prime water In
     for _ in range(3):
         Context.check_water_sensor()
@@ -29,6 +33,10 @@ def priming():
     for _ in range(1):
         Context.check_water_sensor()
         Context.run_pump(pumps=[Context.water_out1, Context.water_out2], duration=0.5)
+
+    # Close all valves
+    for valve in valves_in_use:
+        Context.control_box.close_valve(valve)
 
 
 def prepare():
@@ -104,23 +112,25 @@ def finalize():
 
 
 def run():
+    valves_in_use = range(1)
+
     try:
         # initialize ports
         initialize()
         print("initialized")
 
         # Run feeding sequence for each tank
-        for valve_index in range(1):
+        for valve in valves_in_use:
             # priming pumps
-            priming()
+            priming(valves_in_use)
             print("pumps primed")
 
             # prepare food
             prepare()
             print("food prepared")
 
-            # open the right valve
-            Context.control_box.open_valve(valve_index)
+            # open the current right valve
+            Context.control_box.open_valve(valve)
 
             # deliver food to containers
             stream()
@@ -131,7 +141,7 @@ def run():
             print("tanks cleaned")
 
             # close the opened valve
-            Context.control_box.close_valve(valve_index)
+            Context.control_box.close_valve(valve)
 
     except KeyboardInterrupt:
         print("\nCtrl-C pressed.  Program exiting...")
