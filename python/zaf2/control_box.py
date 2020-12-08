@@ -1,6 +1,6 @@
 from time import sleep
-
 import serial
+from arbol.arbol import lprint
 
 
 class ControlBox:
@@ -9,6 +9,8 @@ class ControlBox:
         self.port = port
         self.rate = rate
         self.nb_arduino = nb_arduino
+
+        self.first_time = True
 
         try:
             self.conn = serial.Serial(self.port, baudrate=self.rate, timeout=2.0)
@@ -32,22 +34,24 @@ class ControlBox:
     test_valves = str.encode("#tv 3\n")
 
     def initialize(self):
-        self.conn.write(self.get_state)
-        rcv = self.conn.read(43)
-        print(rcv)
+        if self.first_time:
+            self.conn.write(self.get_state)
+            rcv = self.conn.read(43)
+            lprint(rcv)
+            self.first_time = False
 
         self.conn.write(self.get_state)
         rcv = self.conn.read(78)
-        print(rcv)
+        lprint(rcv)
         rcv = self.conn.read(78)
-        print(rcv)
+        lprint(rcv)
 
     def open_valve(self, index):
         open_valve_command = str.encode(f"#vo {index} \n")
 
         self.conn.write(open_valve_command)
         rcv = self.conn.read(6)
-        print(rcv)
+        lprint(f"opened valve index:{index}, rcv:{rcv}")
         sleep(1)
 
     def close_valve(self, index):
@@ -55,7 +59,7 @@ class ControlBox:
 
         self.conn.write(close_valve_command)
         rcv = self.conn.read(6)
-        print(rcv)
+        lprint(f"closed valve index:{index}, rcv:{rcv}")
         sleep(1)
 
     def set_pwm(self, index, value):
@@ -63,5 +67,5 @@ class ControlBox:
 
         self.conn.write(set_pwm_command)
         rcv = self.conn.read(6)
-        print(rcv)
+        lprint(f"set_pwm index:{index}, value:{value}, rcv:{rcv}")
         sleep(1)

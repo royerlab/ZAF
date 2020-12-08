@@ -1,6 +1,6 @@
 from time import sleep
-
 from RPi import GPIO
+from arbol.arbol import lprint
 
 from python.zaf2.control_box import ControlBox
 
@@ -42,21 +42,17 @@ class Context(object):
     @classmethod
     def check_water_sensor(cls):
         if GPIO.input(cls.water_sensor) == GPIO.LOW:
-            print("no water warning by sensor")
+            lprint("no water warning by sensor")
             cls.control_box.set_pwm(cls.safety_pump, 0)
         else:
-            print("WATER WARNING by sensor")
+            lprint("WATER WARNING by sensor")
             cls.control_box.set_pwm(cls.safety_pump, 255)
 
     @classmethod
-    def run_pump(cls, pumps, duration=0.5):
-        for pump in pumps:
-            cls.control_box.set_pwm(pump, 255)
-
+    def run_pump(cls, index, duration=1):
+        cls.control_box.set_pwm(index, 255)
         sleep(duration)
-
-        for pump in pumps:
-            cls.control_box.set_pwm(pump, 0)
+        cls.control_box.set_pwm(index, 0)
 
     @classmethod
     def rotate_food_servo(cls, angle):
@@ -64,4 +60,4 @@ class Context(object):
             raise ValueError("angle argument has to be between 0, 180")
 
         cls.control_box.set_pwm(cls.food_servo, angle)
-        sleep(0.02)
+        sleep(1)
