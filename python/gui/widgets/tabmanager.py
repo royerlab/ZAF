@@ -23,24 +23,16 @@ class TabManager(QTabWidget):
         self.active_tabs = []
         self.tabs = []
         for i in range(4):
-            tab = QWidget()
-            tab.layout = QHBoxLayout()
-            tab.layout.setAlignment(Qt.AlignCenter)
+             # tab.layout.setAlignment(Qt.AlignCenter)
 
             if i == 0:
-                tab.setObjectName("Dashboard")
-                tab1 = DashboardTab(self, tab)
-                tab1.setObjectName("Dashboard")
+                tab1 = DashboardTab(self)
             elif i == 1:
-                tab.setObjectName("Log")
-                tab1 = LogTab(self, tab)
-                tab1.setObjectName("Log")
+                tab1 = LogTab(self)
             else:
-                tab.setObjectName(f"Program {i - 1}")
-                tab1 = ProgramTab(self, tab)
-                tab1.setObjectName(f"Program {i - 1}")
+                tab1 = ProgramTab(self)
             self.tabs.append(tab1)
-            self.addTab(tab, tab1.objectName())
+            self.addTab(tab1, tab1.tab_name)
 
         self.tabBarClicked.connect(lambda: self.check_active_tabs())
             # self.setTabsClosable(True)

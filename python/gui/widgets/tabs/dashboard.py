@@ -6,18 +6,20 @@ from PyQt5.QtWidgets import (
     QLabel,
     QGroupBox,
     QGridLayout,
-)
+    QWidget)
 
 import csv
 
 from python.gui.widgets.tabs.protocoltab import ProgramTab
 
 
-class DashboardTab(QTabWidget):
-    def __init__(self, parent, tab):
+class DashboardTab(QWidget):
+    def __init__(self, parent):
         super().__init__()
-        self.tab = tab
         self.parent = parent
+        self.tab_name = "Dashboard"
+
+        self.layout = QVBoxLayout()
 
         # GroupBox1 (Left half)
         # Add_program button
@@ -79,10 +81,10 @@ class DashboardTab(QTabWidget):
         gpbox2_1_layout.addWidget(self.active_prg_text)
         gpbox2_layout.addWidget(gpbox2_1)
 
-        # Add to layout =============================================================
-        self.tab.layout.addWidget(gpbox1)
-        self.tab.layout.addWidget(gpbox2)
-        self.tab.setLayout(self.tab.layout)
+        # Add to layout
+        self.layout.addWidget(gpbox1)
+        self.layout.addWidget(gpbox2)
+        self.setLayout(self.layout)
 
     def update_active_pgm(self):
         self.active_prg_list = []
@@ -118,7 +120,7 @@ class DashboardTab(QTabWidget):
 
         self.dialogbox.setText(f"Preset {id + 1} is saved.")
         self.statusBar.showMessage(f"Preset {id + 1} is saved.")
-        self.tab.repaint()
+        self.repaint()
 
     def load_pgm_fromcsv(self):
         # Scan the checked button
@@ -144,6 +146,6 @@ class DashboardTab(QTabWidget):
         # except:
         #     self.dialogbox.setText(f"{filename} was not found.")
 
-        self.tab.repaint()
+        self.repaint()
 
 

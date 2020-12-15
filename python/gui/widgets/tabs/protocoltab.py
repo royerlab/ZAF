@@ -15,16 +15,19 @@ from PyQt5.QtCore import Qt
 
 
 class ProgramTab(QTabBar):
-    def __init__(self, parent, tab):
+    def __init__(self, parent):
         super().__init__()
-        self.tab = tab
+        self.tab_name = "Program1"
+
+        self.layout = QVBoxLayout()
+
         self.setMovable(True)
         self.parent = parent
         self.is_active = False
         self.num_tanks = 30
         self.num_quantity = ["1", "2", "3", "4"]
         self.program_log = {
-            "Program": tab.objectName(),
+            "Program": "ProgramTab",
             "Active": False,
             "Type": None,
             "Day": None,
@@ -52,7 +55,7 @@ class ProgramTab(QTabBar):
         self.button_delete = QPushButton("Delete", self)
         self.button_delete.clicked.connect(lambda: self.remove_tab())
 
-        gpbox1_0 = QGroupBox(self.tab.objectName())
+        gpbox1_0 = QGroupBox("Some name")
         grid = QGridLayout()
         grid.addWidget(self.button_onoff, 0, 0)
         grid.addWidget(self.button_reset, 0, 1)
@@ -176,11 +179,10 @@ class ProgramTab(QTabBar):
         gpbox2_1.setLayout(grid)
         gpbox2_layout.addWidget(scroll)
 
-
-        # Add to layout =============================================================
-        self.tab.layout.addWidget(gpbox1)
-        self.tab.layout.addWidget(gpbox2)
-        self.tab.setLayout(self.tab.layout)
+        # Add to layout
+        self.layout.addWidget(gpbox1)
+        self.layout.addWidget(gpbox2)
+        self.setLayout(self.layout)
 
 
     def set_isacive(self):
@@ -196,7 +198,7 @@ class ProgramTab(QTabBar):
             for i, bt in enumerate(self.bgroup1_2.buttons()):
                 if i != 8:
                     bt.setChecked(False)
-        self.tab.repaint()
+        self.repaint()
 
     def get_active_day(self):
         checked_dow = [i.isChecked() for i in self.bgroup1_2.buttons()]
