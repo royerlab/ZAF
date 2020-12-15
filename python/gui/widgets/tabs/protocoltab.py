@@ -1,4 +1,6 @@
 from copy import copy
+
+from PyQt5 import QtCore
 from PyQt5.QtWidgets import (
     QPushButton,
     QButtonGroup,
@@ -10,7 +12,7 @@ from PyQt5.QtWidgets import (
     QComboBox,
     QScrollArea,
     QTabBar,
-)
+    QHBoxLayout, QRadioButton)
 from PyQt5.QtCore import Qt
 
 
@@ -19,7 +21,7 @@ class ProgramTab(QTabBar):
         super().__init__()
         self.tab_name = "Program1"
 
-        self.layout = QVBoxLayout()
+        self.layout = QHBoxLayout()
 
         self.setMovable(True)
         self.parent = parent
@@ -37,59 +39,59 @@ class ProgramTab(QTabBar):
             self.program_log.update({f"Tank {i + 1}": None})
         program_default = copy(self.program_log)
 
-        # Group box left
-        gpbox1 = QGroupBox()
-        gpbox1_layout = QVBoxLayout()
-        gpbox1.setLayout(gpbox1_layout)
+        # Layout left
+        self.left_layout = QVBoxLayout()
+        self.left_layout.setAlignment(Qt.AlignTop)
 
         # Create an ON/OFF button
-
         self.button_onoff = QPushButton("On / Off", self)
+        self.button_onoff.setFixedSize(QtCore.QSize(100, 35))
         self.button_onoff.setCheckable(True)
         self.button_onoff.clicked.connect(lambda: self.set_isacive())
         self.button_reset = QPushButton("Reset", self)
+        self.button_reset.setFixedSize(QtCore.QSize(100, 35))
         self.button_reset.clicked.connect(lambda: self.reset(program_default))
         self.button_reset.clicked.connect(lambda: self.tab.repaint())
         self.button_duplicate = QPushButton("Duplicate", self)
+        self.button_duplicate.setFixedSize(QtCore.QSize(100, 35))
         self.button_duplicate.clicked.connect(lambda: self.duplicate())
         self.button_delete = QPushButton("Delete", self)
+        self.button_delete.setFixedSize(QtCore.QSize(100, 35))
         self.button_delete.clicked.connect(lambda: self.remove_tab())
 
-        gpbox1_0 = QGroupBox("Some name")
-        grid = QGridLayout()
-        grid.addWidget(self.button_onoff, 0, 0)
-        grid.addWidget(self.button_reset, 0, 1)
-        grid.addWidget(self.button_duplicate, 1, 0)
-        grid.addWidget(self.button_delete, 1, 1)
-        gpbox1_0.setLayout(grid)
-        gpbox1_layout.addWidget(gpbox1_0)
+        self.first_button_row_layout = QHBoxLayout()
+        self.first_button_row_layout.setAlignment(Qt.AlignLeft)
+        self.first_button_row_layout.addWidget(self.button_onoff)
+        self.first_button_row_layout.addWidget(self.button_reset)
 
-        # Create a button group for feed & washing =============================
+        self.second_button_row_layout = QHBoxLayout()
+        self.second_button_row_layout.setAlignment(Qt.AlignLeft)
+        self.second_button_row_layout.addWidget(self.button_duplicate)
+        self.second_button_row_layout.addWidget(self.button_delete)
+
+        self.left_layout.addLayout(self.first_button_row_layout)
+        self.left_layout.addLayout(self.second_button_row_layout)
+
+        # Create a button group for feed & washing
         self.bgroup1_1 = QButtonGroup(self)
         # self.bgroup1_1.setExclusive(False)
-        self.button_feeding = QPushButton("Feeding", self)
+        self.button_feeding = QRadioButton("Feeding&Washing", self)
         self.button_feeding.setCheckable(True)
-        self.button_washing = QPushButton("Washing", self)
+        self.button_washing = QRadioButton("Only Washing", self)
         self.button_washing.setCheckable(True)
 
-
-        # Make only one button active at once
-        # self.button_feeding.clicked.connect(lambda: self.button_washing.setChecked(False))
-        # self.button_washing.clicked.connect(lambda: self.button_feeding.setChecked(False))
         self.bgroup1_1.addButton(self.button_feeding, 1)
         self.bgroup1_1.addButton(self.button_washing, 2)
         self.bgroup1_1.buttonClicked.connect(lambda: self.record_log("Type", self.bgroup1_1))
 
-                                        # Create a group box for feeding & washing
-        gpbox1_1 = QGroupBox("Feeding or Washing")
-        grid = QGridLayout()
-        # grid.setSpacing(10)
-        grid.addWidget(self.button_feeding, 0, 0)
-        grid.addWidget(QLabel('Or'), 0, 1)
-        grid.addWidget(self.button_washing, 0, 2)
-        grid.setAlignment(Qt.AlignCenter)
+        # Create a group box for feeding & washing
+        gpbox1_1 = QGroupBox("Program Type")
+        grid = QVBoxLayout()
+        grid.addWidget(self.button_feeding)
+        grid.addWidget(self.button_washing)
+        grid.setAlignment(Qt.AlignLeft)
         gpbox1_1.setLayout(grid)
-        gpbox1_layout.addWidget(gpbox1_1)
+        self.left_layout.addWidget(gpbox1_1)
 
 
         # Create a button group for day of week =============================
@@ -114,12 +116,13 @@ class ProgramTab(QTabBar):
 
         # adds each button to the layout
         gpbox1_2 = QGroupBox("Select day of week")
+        gpbox1_2.setAlignment(Qt.AlignLeft)
         grid = QGridLayout()
-        grid.setSpacing(10)
+        grid.setSpacing(5)
         for i, button in enumerate(self.bgroup1_2.buttons()):
-            grid.addWidget(button, i // 4, i % 4)
+            grid.addWidget(button, i % 4, i // 4)
         gpbox1_2.setLayout(grid)
-        gpbox1_layout.addWidget(gpbox1_2)
+        self.left_layout.addWidget(gpbox1_2)
 
         # Add time pulldown
         gpbox1_2_1 = QGroupBox("Select time")
@@ -131,17 +134,7 @@ class ProgramTab(QTabBar):
         gpbox1_2_1_layout = QVBoxLayout()
         gpbox1_2_1_layout.addWidget(self.pd_time)
         gpbox1_2_1.setLayout(gpbox1_2_1_layout)
-        gpbox1_layout.addWidget(gpbox1_2_1)
-
-
-
-        # Message box ==========================
-        gpbox1_3 = QGroupBox("Summary")
-        self.dialogbox = QLabel("Welcome to ZAF 2.0")
-        gpbox1_3_layout = QVBoxLayout()
-        gpbox1_3.setLayout(gpbox1_3_layout)
-        gpbox1_layout.addWidget(self.dialogbox)
-
+        self.left_layout.addWidget(gpbox1_2_1)
 
 
         # Group box right
@@ -168,7 +161,8 @@ class ProgramTab(QTabBar):
             grid.addWidget(cb, i, 0)
             bg = QButtonGroup(self)
             for j, name in enumerate(self.num_quantity):
-                b = QPushButton(name, self)
+                b = QRadioButton(name, self)
+                b.setFixedSize(QtCore.QSize(40, 20))
                 b.setCheckable(True)
                 bg.addButton(b, j + 1)
                 grid.addWidget(b, i, j + 1)
@@ -180,7 +174,7 @@ class ProgramTab(QTabBar):
         gpbox2_layout.addWidget(scroll)
 
         # Add to layout
-        self.layout.addWidget(gpbox1)
+        self.layout.addLayout(self.left_layout)
         self.layout.addWidget(gpbox2)
         self.setLayout(self.layout)
 

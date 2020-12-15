@@ -10,11 +10,12 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.app = app
 
-        self.setWindowTitle('ZAF 2.0')
+        self.setWindowTitle('ZAF+')
         self.setGeometry(0, 0, 640, 455)
         self.setFixedSize(640, 455)
 
         self.statusBar = QStatusBar()
+        self.statusBar.showMessage("Welcome to ZAF+")
         self.setStatusBar(self.statusBar)
 
         self.tab_manager = TabManager(self, self.statusBar)
