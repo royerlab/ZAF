@@ -12,7 +12,7 @@ class LogTab(QWidget):
     def __init__(self, parent):
         super().__init__()
         self.parent = parent
-        self.tab_name = "Log"
+        self.name = "Log"
 
         self.layout = QVBoxLayout()
 

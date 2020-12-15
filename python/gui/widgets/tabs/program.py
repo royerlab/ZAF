@@ -1,3 +1,4 @@
+import json
 from copy import copy
 
 from PyQt5 import QtCore
@@ -6,7 +7,6 @@ from PyQt5.QtWidgets import (
     QButtonGroup,
     QVBoxLayout,
     QGroupBox,
-    QLabel,
     QGridLayout,
     QCheckBox,
     QComboBox,
@@ -17,9 +17,10 @@ from PyQt5.QtCore import Qt
 
 
 class ProgramTab(QTabBar):
-    def __init__(self, parent):
+    def __init__(self, parent, name=None):
         super().__init__()
-        self.tab_name = "Program1"
+        self.parent = parent
+        self.name = name
 
         self.layout = QHBoxLayout()
 
@@ -29,14 +30,15 @@ class ProgramTab(QTabBar):
         self.num_tanks = 30
         self.num_quantity = ["1", "2", "3", "4"]
         self.program_log = {
-            "Program": "ProgramTab",
-            "Active": False,
-            "Type": None,
+            "Program_name": self.name,
+            "Enabled": False,
+            "Type": "Feeding&Washing",
             "Day": None,
             "Time": None,
+            "Tanks": [None] * self.num_tanks
         }
-        for i in range(self.num_tanks):
-            self.program_log.update({f"Tank {i + 1}": None})
+        # for i in range(self.num_tanks):
+        #     self.program_log.update({f"Tank {i + 1}": None})
         program_default = copy(self.program_log)
 
         # Layout left
@@ -44,10 +46,10 @@ class ProgramTab(QTabBar):
         self.left_layout.setAlignment(Qt.AlignTop)
 
         # Create an ON/OFF button
-        self.button_onoff = QPushButton("On / Off", self)
+        self.button_onoff = QRadioButton("Enabled", self)
         self.button_onoff.setFixedSize(QtCore.QSize(100, 35))
         self.button_onoff.setCheckable(True)
-        self.button_onoff.clicked.connect(lambda: self.set_isacive())
+        self.button_onoff.clicked.connect(lambda: self.update_isactive())
         self.button_reset = QPushButton("Reset", self)
         self.button_reset.setFixedSize(QtCore.QSize(100, 35))
         self.button_reset.clicked.connect(lambda: self.reset(program_default))
@@ -57,7 +59,7 @@ class ProgramTab(QTabBar):
         self.button_duplicate.clicked.connect(lambda: self.duplicate())
         self.button_delete = QPushButton("Delete", self)
         self.button_delete.setFixedSize(QtCore.QSize(100, 35))
-        self.button_delete.clicked.connect(lambda: self.remove_tab())
+        self.button_delete.clicked.connect(lambda: self.update_json())
 
         self.first_button_row_layout = QHBoxLayout()
         self.first_button_row_layout.setAlignment(Qt.AlignLeft)
@@ -77,6 +79,7 @@ class ProgramTab(QTabBar):
         # self.bgroup1_1.setExclusive(False)
         self.button_feeding = QRadioButton("Feeding&Washing", self)
         self.button_feeding.setCheckable(True)
+        self.button_feeding.setChecked(True)
         self.button_washing = QRadioButton("Only Washing", self)
         self.button_washing.setCheckable(True)
 
@@ -109,7 +112,7 @@ class ProgramTab(QTabBar):
         self.bgroup1_2.setExclusive(False)
         for id, name in enumerate(self.button_dow):
             button = QCheckBox(name, self)
-            button.stateChanged.connect(lambda: self.get_active_day())
+            button.stateChanged.connect(lambda: self.update_active_days())
             if name == 'Everyday':
                 button.clicked.connect(lambda: self.check_everyday())
             self.bgroup1_2.addButton(button, id)
@@ -130,7 +133,7 @@ class ProgramTab(QTabBar):
         for h in range(24):
             for m in range(2):
                 self.pd_time.addItem(f'{h // 12 * 12 + h % 12} : {m * 30 :02d} {"AM" if h < 12 else "PM"}')
-        self.pd_time.currentIndexChanged.connect(lambda: self.get_active_day())
+        self.pd_time.currentIndexChanged.connect(lambda: self.update_active_days())
         gpbox1_2_1_layout = QVBoxLayout()
         gpbox1_2_1_layout.addWidget(self.pd_time)
         gpbox1_2_1.setLayout(gpbox1_2_1_layout)
@@ -178,10 +181,10 @@ class ProgramTab(QTabBar):
         self.layout.addWidget(gpbox2)
         self.setLayout(self.layout)
 
-
-    def set_isacive(self):
+    def update_isactive(self):
         self.is_active = self.button_onoff.isChecked()
-        self.program_log["Active"] = self.button_onoff.isChecked()
+        self.program_log["Enabled"] = self.button_onoff.isChecked()
+        self.update_json()
 
     def check_everyday(self):
         if self.bgroup1_2.buttons()[-1].isChecked():
@@ -193,15 +196,16 @@ class ProgramTab(QTabBar):
                 if i != 8:
                     bt.setChecked(False)
         self.repaint()
+        self.update_active_days()
 
-    def get_active_day(self):
+    def update_active_days(self):
         checked_dow = [i.isChecked() for i in self.bgroup1_2.buttons()]
         dow = [self.button_dow[i][:3] for i, ii in enumerate(checked_dow) if ii and self.button_dow[i] != "Everyday"]
         time = self.pd_time.currentText()
-        self.dialogbox.setText(" ".join(dow) + "  " + time)
-        self.parent.tabs[0].update_active_pgm()
+        self.parent.tabs[0].update_active_program_list()
         self.program_log["Day"] = dow
         self.program_log["Time"] = time
+        self.update_json()
 
     def record_log(self, key=None, obj=None):
         if isinstance(obj, QButtonGroup):
@@ -215,7 +219,7 @@ class ProgramTab(QTabBar):
                 if tk.isChecked():
                     for i in bt.buttons():
                         if i.isChecked():
-                            self.program_log[tk.text()] = i.text()
+                            self.program_log["Tanks"][int(tk.text().split()[1]) - 1] = i.text()
                 else:
                     self.program_log[tk.text()] = None
 
@@ -280,11 +284,18 @@ class ProgramTab(QTabBar):
         self.parent.addprogramtab()
         self.parent.tabs[-1].reset(self.program_log)
 
-
     def remove_tab(self):
         # Scan for the current tab
         for id, tab in enumerate(self.parent.tabs):
             if tab.objectName() == self.tab.objectName():
                 del self.parent.tabs[id]
                 self.parent.removeTab(id)
+
+    def update_json(self):
+        # Serializing json
+        json_object = json.dumps(self.program_log, indent=4)
+
+        # Writing to sample.json
+        with open(f'/home/pi/Dev/prod/zaf_data/{self.name}.json', "w") as outfile:
+            outfile.write(json_object)
 

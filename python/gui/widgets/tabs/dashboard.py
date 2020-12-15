@@ -1,25 +1,27 @@
 import os
 from PyQt5.QtWidgets import (
     QPushButton,
-    QTabWidget,
     QVBoxLayout,
     QLabel,
     QGroupBox,
     QGridLayout,
-    QWidget)
+    QWidget, QHBoxLayout)
 
 import csv
 
-from python.gui.widgets.tabs.protocoltab import ProgramTab
+from python.gui.widgets.tabs.program import ProgramTab
 
 
 class DashboardTab(QWidget):
     def __init__(self, parent):
         super().__init__()
         self.parent = parent
-        self.tab_name = "Dashboard"
+        self.name = "Dashboard"
 
-        self.layout = QVBoxLayout()
+        self.layout = QHBoxLayout()
+
+        self.left_layout = QVBoxLayout()
+        self.right_layout = QVBoxLayout()
 
         # GroupBox1 (Left half)
         # Add_program button
@@ -86,11 +88,13 @@ class DashboardTab(QWidget):
         gpbox2_layout.addWidget(gpbox2_1)
 
         # Add to layout
-        self.layout.addWidget(gpbox1)
-        self.layout.addWidget(gpbox2)
+        self.left_layout.addWidget(gpbox1)
+        self.right_layout.addWidget(gpbox2)
+        self.layout.addLayout(self.left_layout)
+        self.layout.addLayout(self.right_layout)
         self.setLayout(self.layout)
 
-    def update_active_pgm(self):
+    def update_active_program_list(self):
         self.active_prg_list = []
         for i, tb in enumerate(self.parent.active_tabs):
             if list(tb.values())[0]:

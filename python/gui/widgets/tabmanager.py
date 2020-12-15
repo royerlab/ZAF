@@ -1,3 +1,5 @@
+import json
+
 from PyQt5.QtWidgets import (
     QTabWidget,
     QWidget,
@@ -7,7 +9,7 @@ from PyQt5.QtCore import Qt
 
 from python.gui.widgets.tabs.dashboard import DashboardTab
 from python.gui.widgets.tabs.logtab import LogTab
-from python.gui.widgets.tabs.protocoltab import ProgramTab
+from python.gui.widgets.tabs.program import ProgramTab
 
 """
 This script creates a TabManager that manages multiple tabs.
@@ -21,24 +23,38 @@ class TabManager(QTabWidget):
         self.parent = parent
         self.status_bar = status_bar
 
+        self.only_valid_files = []
         self.active_tabs = []
         self.tabs = []
-        for i in range(4):
-             # tab.layout.setAlignment(Qt.AlignCenter)
-
+        for i in range(2):
             if i == 0:
                 tab1 = DashboardTab(self)
             elif i == 1:
                 tab1 = LogTab(self)
-            else:
-                tab1 = ProgramTab(self)
+
             self.tabs.append(tab1)
-            self.addTab(tab1, tab1.tab_name)
+            self.addTab(tab1, tab1.name)
+
+        self.populate_programs()
 
         self.tabBarClicked.connect(lambda: self.check_active_tabs())
             # self.setTabsClosable(True)
 
+    def populate_programs(self):
+        json_folder_path = "/home/pi/Dev/prod/zaf_data"
 
+        from os import listdir
+        from os.path import isfile, join
+        self.only_valid_files = [f for f in listdir(json_folder_path) if isfile(join(json_folder_path, f)) and "json" in f]
+
+        for file in self.only_valid_files:
+            with open(join(json_folder_path, file)) as json_file:
+                data = json.load(json_file)
+
+                tab1 = ProgramTab(self, name=data["Program_name"])
+
+                self.tabs.append(tab1)
+                self.addTab(tab1, tab1.name)
 
     def addprogramtab(self):
         # Check how many ProgramTab are there
@@ -68,7 +84,7 @@ class TabManager(QTabWidget):
         for tb in self.tabs:
             if isinstance(tb, ProgramTab):
                 self.active_tabs.append({tb.objectName(): tb.is_active})
-        self.tabs[0].update_active_pgm()
+        self.tabs[0].update_active_program_list()
 
     def reconstruct_program(self, data):
         # Check number of ProgramTabs
