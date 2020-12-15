@@ -16,8 +16,9 @@ This script creates a TabManager that manages multiple tabs.
 
 
 class TabManager(QTabWidget):
-    def __init__(self, status_bar):
+    def __init__(self, parent, status_bar):
         super().__init__()
+        self.parent = parent
         self.status_bar = status_bar
 
         self.active_tabs = []

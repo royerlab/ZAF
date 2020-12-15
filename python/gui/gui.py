@@ -7,5 +7,5 @@ from python.gui.windows.mainwindow import MainWindow
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     app.processEvents()
-    ctrl = MainWindow()
+    ctrl = MainWindow(app)
     sys.exit(app.exec_())

@@ -61,6 +61,10 @@ class DashboardTab(QWidget):
         self.button_emstop.clicked.connect(lambda: self.status_bar.setText("Emergency Stop!"))
         gpbox1_layout.addWidget(self.button_emstop)
 
+        self.exit_button = QPushButton("Exit ZAF", self)
+        self.exit_button.clicked.connect(lambda: self.parent.parent.app.quit())
+        gpbox1_layout.addWidget(self.exit_button)
+
         # GroupBox2 (Right half)
         gpbox2 = QGroupBox()
         gpbox2_layout = QVBoxLayout()

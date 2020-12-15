@@ -1,5 +1,4 @@
 from PyQt5.QtWidgets import (
-    QPushButton,
     QVBoxLayout,
     QTextEdit,
     QWidget,
