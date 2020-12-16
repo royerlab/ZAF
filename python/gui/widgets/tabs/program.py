@@ -1,4 +1,5 @@
 import json
+import os
 from copy import copy
 
 from PyQt5 import QtCore
@@ -15,6 +16,9 @@ from PyQt5.QtWidgets import (
     QHBoxLayout, QRadioButton)
 from PyQt5.QtCore import Qt
 
+from python.gui.widgets.worker import Worker
+from python.zaf2.fishfeed import run
+
 
 class ProgramTab(QTabBar):
     def __init__(self, parent, name=None):
@@ -25,8 +29,8 @@ class ProgramTab(QTabBar):
         self.layout = QHBoxLayout()
 
         self.setMovable(True)
-        self.parent = parent
-        self.is_active = False
+        self.is_running = False
+        self.is_enabled = False
         self.num_tanks = 30
         self.num_quantity = ["1", "2", "3", "4"]
         self.program_log = {
@@ -45,11 +49,10 @@ class ProgramTab(QTabBar):
         self.left_layout = QVBoxLayout()
         self.left_layout.setAlignment(Qt.AlignTop)
 
-        # Create an ON/OFF button
-        self.button_onoff = QRadioButton("Enabled", self)
-        self.button_onoff.setFixedSize(QtCore.QSize(100, 35))
-        self.button_onoff.setCheckable(True)
-        self.button_onoff.clicked.connect(lambda: self.update_isactive())
+        self.button_startstop = QPushButton("Run", self)
+        self.button_startstop.setFixedSize(QtCore.QSize(100, 35))
+        self.button_startstop.setCheckable(True)
+        self.button_startstop.clicked.connect(lambda: self.startstop_program())
         self.button_reset = QPushButton("Reset", self)
         self.button_reset.setFixedSize(QtCore.QSize(100, 35))
         self.button_reset.clicked.connect(lambda: self.reset(program_default))
@@ -59,11 +62,11 @@ class ProgramTab(QTabBar):
         self.button_duplicate.clicked.connect(lambda: self.duplicate())
         self.button_delete = QPushButton("Delete", self)
         self.button_delete.setFixedSize(QtCore.QSize(100, 35))
-        self.button_delete.clicked.connect(lambda: self.update_json())
+        self.button_delete.clicked.connect(lambda: self.delete_tab())
 
         self.first_button_row_layout = QHBoxLayout()
         self.first_button_row_layout.setAlignment(Qt.AlignLeft)
-        self.first_button_row_layout.addWidget(self.button_onoff)
+        self.first_button_row_layout.addWidget(self.button_startstop)
         self.first_button_row_layout.addWidget(self.button_reset)
 
         self.second_button_row_layout = QHBoxLayout()
@@ -77,10 +80,10 @@ class ProgramTab(QTabBar):
         # Create a button group for feed & washing
         self.bgroup1_1 = QButtonGroup(self)
         # self.bgroup1_1.setExclusive(False)
-        self.button_feeding = QRadioButton("Feeding&Washing", self)
+        self.button_feeding = QRadioButton("Feeding and washing", self)
         self.button_feeding.setCheckable(True)
         self.button_feeding.setChecked(True)
-        self.button_washing = QRadioButton("Only Washing", self)
+        self.button_washing = QRadioButton("Only washing", self)
         self.button_washing.setCheckable(True)
 
         self.bgroup1_1.addButton(self.button_feeding, 1)
@@ -96,8 +99,7 @@ class ProgramTab(QTabBar):
         gpbox1_1.setLayout(grid)
         self.left_layout.addWidget(gpbox1_1)
 
-
-        # Create a button group for day of week =============================
+        # Create a button group for day of week
         self.button_dow = [
             'Monday',
             'Tuesday',
@@ -181,8 +183,12 @@ class ProgramTab(QTabBar):
         self.layout.addWidget(gpbox2)
         self.setLayout(self.layout)
 
+    @property
+    def json_path(self):
+        return f'/home/pi/Dev/prod/zaf_data/{self.name}.json'
+
     def update_isactive(self):
-        self.is_active = self.button_onoff.isChecked()
+        self.is_enabled = self.button_onoff.isChecked()
         self.program_log["Enabled"] = self.button_onoff.isChecked()
         self.update_json()
 
@@ -230,7 +236,7 @@ class ProgramTab(QTabBar):
             if key == "Active":
                 if isinstance(val, str):
                     val = eval(val)
-                self.is_active = val
+                self.is_enabled = val
                 self.button_onoff.setChecked(val)
             elif key == "Type":
                 if val == "Feeding":
@@ -284,18 +290,57 @@ class ProgramTab(QTabBar):
         self.parent.addprogramtab()
         self.parent.tabs[-1].reset(self.program_log)
 
-    def remove_tab(self):
+    def delete_tab(self):
         # Scan for the current tab
         for id, tab in enumerate(self.parent.tabs):
-            if tab.objectName() == self.tab.objectName():
+            if tab.name == self.name:
                 del self.parent.tabs[id]
                 self.parent.removeTab(id)
+
+                if os.path.isfile(self.json_path):
+                    os.remove(self.json_path)
+                else:  ## Show an error ##
+                    print("Error: %s file not found" % self.json_path)
 
     def update_json(self):
         # Serializing json
         json_object = json.dumps(self.program_log, indent=4)
 
         # Writing to sample.json
-        with open(f'/home/pi/Dev/prod/zaf_data/{self.name}.json', "w") as outfile:
+        with open(self.json_path, "w") as outfile:
             outfile.write(json_object)
+
+    def progress_fn(self, log_str):
+        self.parent.log_tab.infoTextBox.insertPlainText(log_str)
+
+    def startstop_program(self):
+        self.update_json()
+        print("startstop_program called")
+
+        if self.is_running:
+            # psutil.Process(self.p.pid).kill()
+            self.is_running = False
+            self.button_startstop.setText("Start")
+        else:
+            # self.p = subprocess.Popen(['python3', '-m', 'python.zaf2.fishfeed'])
+            # self.p = subprocess.Popen(['python3', '-c', 'print("asdfasdfa")'])
+
+            worker = Worker(
+                run
+            )  # Any other args, kwargs are passed to the run function
+
+            # worker.signals.result.connect(self.result_callback)
+            # worker.signals.finished.connect(self.thread_complete)
+            worker.signals.progress.connect(self.progress_fn)
+
+            self.parent.log_tab.clear_activity()
+
+            # Execute
+            self.parent.threadpool.start(worker)
+
+            self.is_running = True
+            self.button_startstop.setText("Stop")
+
+
+
 

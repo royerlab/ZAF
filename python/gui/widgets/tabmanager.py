@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import (
     QWidget,
     QHBoxLayout,
 )
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QThreadPool
 
 from python.gui.widgets.tabs.dashboard import DashboardTab
 from python.gui.widgets.tabs.logtab import LogTab
@@ -21,19 +21,20 @@ class TabManager(QTabWidget):
     def __init__(self, parent, status_bar):
         super().__init__()
         self.parent = parent
+        self.threadpool = QThreadPool()
         self.status_bar = status_bar
 
         self.only_valid_files = []
         self.active_tabs = []
         self.tabs = []
-        for i in range(2):
-            if i == 0:
-                tab1 = DashboardTab(self)
-            elif i == 1:
-                tab1 = LogTab(self)
 
-            self.tabs.append(tab1)
-            self.addTab(tab1, tab1.name)
+        self.dashboard_tab = DashboardTab(self)
+        self.tabs.append(self.dashboard_tab)
+        self.addTab(self.dashboard_tab, self.dashboard_tab.name)
+
+        self.log_tab = LogTab(self)
+        self.tabs.append(self.log_tab)
+        self.addTab(self.log_tab, self.log_tab.name)
 
         self.populate_programs()
 
@@ -83,7 +84,7 @@ class TabManager(QTabWidget):
         self.active_tabs = []
         for tb in self.tabs:
             if isinstance(tb, ProgramTab):
-                self.active_tabs.append({tb.objectName(): tb.is_active})
+                self.active_tabs.append({tb.objectName(): tb.is_enabled})
         self.tabs[0].update_active_program_list()
 
     def reconstruct_program(self, data):
