@@ -30,20 +30,20 @@ class ProgramTab(QTabBar):
 
         self.setMovable(True)
         self.is_running = False
-        self.is_enabled = False
+        self.is_enabled_checkbox = QCheckBox(self.name)
+        self.is_enabled_checkbox.stateChanged.connect(lambda: self.record_log("Enabled", self.is_enabled_checkbox.isChecked()))
+
         self.num_tanks = 30
         self.num_quantity = ["1", "2", "3", "4"]
-        self.program_log = {
+        self.program_settings = {
             "Program_name": self.name,
-            "Enabled": False,
+            "Enabled": self.is_enabled_checkbox.isChecked(),
             "Type": "Feeding&Washing",
             "Day": None,
             "Time": None,
             "Tanks": [None] * self.num_tanks
         }
-        # for i in range(self.num_tanks):
-        #     self.program_log.update({f"Tank {i + 1}": None})
-        program_default = copy(self.program_log)
+        program_default = copy(self.program_settings)
 
         # Layout left
         self.left_layout = QVBoxLayout()
@@ -52,11 +52,11 @@ class ProgramTab(QTabBar):
         self.button_startstop = QPushButton("Run", self)
         self.button_startstop.setFixedSize(QtCore.QSize(100, 35))
         self.button_startstop.setCheckable(True)
-        self.button_startstop.clicked.connect(lambda: self.startstop_program())
+        self.button_startstop.clicked.connect(lambda: self.start_program())
         self.button_reset = QPushButton("Reset", self)
         self.button_reset.setFixedSize(QtCore.QSize(100, 35))
         self.button_reset.clicked.connect(lambda: self.reset(program_default))
-        self.button_reset.clicked.connect(lambda: self.tab.repaint())
+        self.button_reset.clicked.connect(lambda: self.repaint())
         self.button_duplicate = QPushButton("Duplicate", self)
         self.button_duplicate.setFixedSize(QtCore.QSize(100, 35))
         self.button_duplicate.clicked.connect(lambda: self.duplicate())
@@ -183,13 +183,14 @@ class ProgramTab(QTabBar):
         self.layout.addWidget(gpbox2)
         self.setLayout(self.layout)
 
+        self.update_json()
+
     @property
     def json_path(self):
         return f'/home/pi/Dev/prod/zaf_data/{self.name}.json'
 
     def update_isactive(self):
-        self.is_enabled = self.button_onoff.isChecked()
-        self.program_log["Enabled"] = self.button_onoff.isChecked()
+        self.program_settings["Enabled"] = self.is_enabled_checkbox.isChecked()
         self.update_json()
 
     def check_everyday(self):
@@ -208,9 +209,9 @@ class ProgramTab(QTabBar):
         checked_dow = [i.isChecked() for i in self.bgroup1_2.buttons()]
         dow = [self.button_dow[i][:3] for i, ii in enumerate(checked_dow) if ii and self.button_dow[i] != "Everyday"]
         time = self.pd_time.currentText()
-        self.parent.tabs[0].update_active_program_list()
-        self.program_log["Day"] = dow
-        self.program_log["Time"] = time
+        self.parent.tabs[0].update_program_list()
+        self.program_settings["Day"] = dow
+        self.program_settings["Time"] = time
         self.update_json()
 
     def record_log(self, key=None, obj=None):
@@ -218,38 +219,40 @@ class ProgramTab(QTabBar):
             # For logging feedin or washing
             for i in obj.buttons():
                 if i.isChecked():
-                    self.program_log[key] = i.text()
+                    self.program_settings[key] = i.text()
+        elif key == "Enabled":
+            self.program_settings[key] = obj
         else:
             # For logging food quantity
             for tk, bt in zip(self.bgroup2_1.buttons(), self.bgroup2_2):
                 if tk.isChecked():
                     for i in bt.buttons():
                         if i.isChecked():
-                            self.program_log["Tanks"][int(tk.text().split()[1]) - 1] = i.text()
+                            # print(int(tk.text().split()[1]) - 1)
+                            # print(i.text())
+                            self.program_settings["Tanks"][int(tk.text().split()[1]) - 1] = i.text()
                 else:
-                    self.program_log[tk.text()] = None
+                    self.program_settings[tk.text()] = None
+
+        self.update_json()
 
 
     def reset(self, preset):
-        self.program_log = copy(preset)
+        self.program_settings = copy(preset)
         for key, val in preset.items():
-            if key == "Active":
+            if key == "Enabled":
                 if isinstance(val, str):
                     val = eval(val)
-                self.is_enabled = val
-                self.button_onoff.setChecked(val)
+                self.is_enabled_checkbox.setChecked(bool(val))
+                # self.button_onoff.setChecked(val)
             elif key == "Type":
-                if val == "Feeding":
+                if val == "Feeding and washing":
                     self.button_feeding.setChecked(True)
                     self.button_washing.setChecked(False)
-                elif val == "Washing":
+                elif val == "Only washing":
                     self.button_feeding.setChecked(False)
                     self.button_washing.setChecked(True)
-                else:
-                    self.bgroup1_1.setExclusive(False)
-                    self.button_feeding.setChecked(False)
-                    self.button_washing.setChecked(False)
-                    self.bgroup1_1.setExclusive(True)
+                self.record_log("Type", self.bgroup1_1)
             elif key == "Day":
                 # Reset all checkboxes
                 for bt in self.bgroup1_2.buttons():
@@ -268,27 +271,28 @@ class ProgramTab(QTabBar):
                     self.pd_time.setCurrentIndex(self.pd_time.findText(val))
                 else:
                     self.pd_time.setCurrentIndex(0)
-            elif "Tank" in key:
-                tankid = int(key.split(' ')[-1]) - 1
-                if val:
-                    self.bgroup2_1.buttons()[tankid].setChecked(True)
-                    bg = self.bgroup2_2[tankid]
-                    for bt in bg.buttons():
-                        if val == bt.text():
-                            bt.setChecked(True)
-                            break
-                else:
-                    self.bgroup2_1.buttons()[tankid].setChecked(True)
-                    bg = self.bgroup2_2[tankid]
-                    bg.setExclusive(False)
-                    for bt in bg.buttons():
-                        bt.setChecked(False)
-                    bg.setExclusive(True)
+            elif "Tanks" in key:
+                for idx, tank in enumerate(val):
+                    tankid = idx
+                    if tank:
+                        self.bgroup2_1.buttons()[tankid].setChecked(True)
+                        bg = self.bgroup2_2[tankid]
+                        for bt in bg.buttons():
+                            if tank == bt.text():
+                                bt.setChecked(True)
+                                break
+                    else:
+                        self.bgroup2_1.buttons()[tankid].setChecked(True)
+                        bg = self.bgroup2_2[tankid]
+                        bg.setExclusive(False)
+                        for bt in bg.buttons():
+                            bt.setChecked(False)
+                        bg.setExclusive(True)
         # self.tab.repaint()
 
     def duplicate(self):
         self.parent.addprogramtab()
-        self.parent.tabs[-1].reset(self.program_log)
+        self.parent.tabs[-1].reset(self.program_settings)
 
     def delete_tab(self):
         # Scan for the current tab
@@ -304,7 +308,7 @@ class ProgramTab(QTabBar):
 
     def update_json(self):
         # Serializing json
-        json_object = json.dumps(self.program_log, indent=4)
+        json_object = json.dumps(self.program_settings, indent=4)
 
         # Writing to sample.json
         with open(self.json_path, "w") as outfile:
@@ -313,33 +317,32 @@ class ProgramTab(QTabBar):
     def progress_fn(self, log_str):
         self.parent.log_tab.infoTextBox.insertPlainText(log_str)
 
-    def startstop_program(self):
+    def thread_complete(self):
+        self.is_running = False
+        self.button_startstop.setText("Start")
+        self.button_startstop.setEnabled(True)
+        self.parent.status_bar.showMessage(f"{self.name} is done.")
+
+    def start_program(self):
         self.update_json()
-        print("startstop_program called")
 
-        if self.is_running:
-            # psutil.Process(self.p.pid).kill()
-            self.is_running = False
-            self.button_startstop.setText("Start")
-        else:
-            # self.p = subprocess.Popen(['python3', '-m', 'python.zaf2.fishfeed'])
-            # self.p = subprocess.Popen(['python3', '-c', 'print("asdfasdfa")'])
+        worker = Worker(
+            run
+        )  # Any other args, kwargs are passed to the run function
 
-            worker = Worker(
-                run
-            )  # Any other args, kwargs are passed to the run function
+        # worker.signals.result.connect(self.result_callback)
+        worker.signals.finished.connect(self.thread_complete)
+        worker.signals.progress.connect(self.progress_fn)
 
-            # worker.signals.result.connect(self.result_callback)
-            # worker.signals.finished.connect(self.thread_complete)
-            worker.signals.progress.connect(self.progress_fn)
+        self.parent.log_tab.clear_activity()
 
-            self.parent.log_tab.clear_activity()
+        # Execute
+        self.parent.threadpool.start(worker)
 
-            # Execute
-            self.parent.threadpool.start(worker)
-
-            self.is_running = True
-            self.button_startstop.setText("Stop")
+        self.is_running = True
+        self.parent.status_bar.showMessage(f"{self.name} is running now...")
+        self.button_startstop.setText("Running")
+        self.button_startstop.setEnabled(False)
 
 
 

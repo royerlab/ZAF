@@ -1,11 +1,13 @@
 import os
+
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
     QPushButton,
     QVBoxLayout,
     QLabel,
     QGroupBox,
     QGridLayout,
-    QWidget, QHBoxLayout)
+    QWidget, QHBoxLayout, QCheckBox)
 
 import csv
 
@@ -22,11 +24,12 @@ class DashboardTab(QWidget):
 
         self.left_layout = QVBoxLayout()
         self.right_layout = QVBoxLayout()
+        self.right_layout.setAlignment(Qt.AlignTop)
 
         # GroupBox1 (Left half)
         # Add_program button
         self.button_addtab = QPushButton("Add program", self)
-        self.button_addtab.clicked.connect(lambda : parent.addprogramtab())
+        self.button_addtab.clicked.connect(lambda: parent.addprogramtab())
 
         gpbox1 = QGroupBox("Control Panel")
         # gpbox1.setMinimumSize(380, 420)  # (width, height)
@@ -68,49 +71,49 @@ class DashboardTab(QWidget):
         gpbox1_layout.addWidget(self.exit_button)
 
         # GroupBox2 (Right half)
-        gpbox2 = QGroupBox()
-        gpbox2_layout = QVBoxLayout()
-        gpbox2.setLayout(gpbox2_layout)
+        self.program_checkboxes_layout = QVBoxLayout()
+        self.program_checkboxes_layout.setAlignment(Qt.AlignTop)
+        self.right_layout.addWidget(QGroupBox("Programs"))
 
-        # Active program monitor
-        gpbox2_1 = QGroupBox("Active programs")
-        self.active_prg_list = []
-        for tb in parent.tabs:
-            if "Program" in tb.objectName():
-                if tb.is_active:
-                    self.active_prg_text.append(tb.objectName())
-
-        self.active_prg_text = QLabel("\n".join(self.active_prg_list) if self.active_prg_list else "None")
-        self.active_prg_text.setWordWrap(True)
-        gpbox2_1_layout = QVBoxLayout()
-        gpbox2_1.setLayout(gpbox2_1_layout)
-        gpbox2_1_layout.addWidget(self.active_prg_text)
-        gpbox2_layout.addWidget(gpbox2_1)
+        self.programs_list = []
+        self.program_checkboxes_list = []
+        for tab in parent.tabs:
+            if "Program" in tab.name:
+                self.programs_list.append(tab.name)
+                checkbox = QCheckBox(tab.name)
+                checkbox.setChecked(tab.is_enabled_checkbox.isChecked())
+                checkbox.stateChanged.connect(lambda: tab.is_enabled_checkbox.setChecked(checkbox.isChecked()))
+                self.program_checkboxes_list.append(checkbox)
+                self.program_checkboxes_layout.addWidget(checkbox)
 
         # Add to layout
         self.left_layout.addWidget(gpbox1)
-        self.right_layout.addWidget(gpbox2)
         self.layout.addLayout(self.left_layout)
+        self.right_layout.addLayout(self.program_checkboxes_layout)
         self.layout.addLayout(self.right_layout)
         self.setLayout(self.layout)
 
-    def update_active_program_list(self):
-        self.active_prg_list = []
-        for i, tb in enumerate(self.parent.active_tabs):
-            if list(tb.values())[0]:
-                for tab in self.parent.tabs:
-                    if list(tb.keys())[0] == tab.objectName():
-                        time = tab.dialogbox.text()
-                        self.active_prg_list.append(f"Program {i + 1}:   " + time)
-        self.active_prg_text.setText(
-            "\n".join(self.active_prg_list) if self.active_prg_list else "None"
-        )
+    def update_program_list(self):
+        for i in reversed(range(self.program_checkboxes_layout.count())):
+            self.program_checkboxes_layout.itemAt(i).widget().close()
+            self.program_checkboxes_layout.takeAt(i)
+
+        for tab in self.parent.tabs:
+            if "Program" in tab.name:
+                self.programs_list.append(tab.name)
+                checkbox = QCheckBox(tab.name)
+                checkbox.setChecked(tab.is_enabled_checkbox.isChecked())
+                checkbox.stateChanged.connect(lambda: tab.is_enabled_checkbox.setChecked(checkbox.isChecked()))
+                self.program_checkboxes_list.append(checkbox)
+                self.program_checkboxes_layout.addWidget(checkbox)
+
+        self.repaint()
 
     def save_pgm_tocsv(self):
         logdata = []
         for pg in self.parent.tabs:
             if isinstance(pg, ProgramTab):
-                logdata.append(pg.program_log)
+                logdata.append(pg.program_settings)
 
         # Scan the checked button
         for id, bt in enumerate(self.save_buttons):
