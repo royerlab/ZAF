@@ -5,8 +5,8 @@ from PyQt5.QtWidgets import (
     QVBoxLayout,
     QTextEdit,
     QWidget,
-    QHBoxLayout
-)
+    QHBoxLayout,
+    QLabel)
 from PyQt5.QtCore import Qt
 
 
@@ -18,6 +18,9 @@ class LogTab(QWidget):
         self.name = "Log"
 
         self.layout = QVBoxLayout()
+
+        self.program_name_label = QLabel("")
+        self.layout.addWidget(self.program_name_label)
 
         # Add information
         self.infoTextBox = QTextEdit()

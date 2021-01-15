@@ -328,6 +328,7 @@ class ProgramTab(QTabBar):
         self.is_running = False
         self.button_startstop.setText("Start")
         self.button_startstop.setEnabled(True)
+        self.parent.log_tab.program_name_label.setText(f"{self.name} is done")
         self.parent.status_bar.showMessage(f"{self.name} is done.")
 
     def start_program(self):
@@ -347,6 +348,7 @@ class ProgramTab(QTabBar):
         self.parent.threadpool.start(worker)
 
         self.is_running = True
+        self.parent.log_tab.program_name_label.setText(f"{self.name} is running now")
         self.parent.status_bar.showMessage(f"{self.name} is running now...")
         self.button_startstop.setText("Running")
         self.button_startstop.setEnabled(False)

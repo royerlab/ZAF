@@ -119,31 +119,31 @@ def finalize():
     lprint("finalized")
 
 
-def run():
+def run(progress_callback):
     valves_in_use_feeding = [27]
     try:
         # initialize ports
         initialize()
 
-        # Run feeding sequence for each tank
-        for valve in valves_in_use_feeding:
-            # priming pumps
-            priming([valve])
-
-            # prepare food
-            prepare()
-
-            # open the current right valve
-            Context.control_box.open_valve(valve)
-
-            # deliver food to containers
-            stream()
-
-            # clean the tank
-            clean()
-
-            # close the opened valve
-            Context.control_box.close_valve(valve)
+        # # Run feeding sequence for each tank
+        # for valve in valves_in_use_feeding:
+        #     # priming pumps
+        #     priming([valve])
+        #
+        #     # prepare food
+        #     prepare()
+        #
+        #     # open the current right valve
+        #     Context.control_box.open_valve(valve)
+        #
+        #     # deliver food to containers
+        #     stream()
+        #
+        #     # clean the tank
+        #     clean()
+        #
+        #     # close the opened valve
+        #     Context.control_box.close_valve(valve)
 
     except KeyboardInterrupt:
         print("\nCtrl-C pressed.  Program exiting...")
