@@ -141,7 +141,6 @@ class ProgramTab(QTabBar):
         gpbox1_2_1.setLayout(gpbox1_2_1_layout)
         self.left_layout.addWidget(gpbox1_2_1)
 
-
         # Group box right
         # Box for food quantity =================================================
         gpbox2 = QGroupBox("Food Quantity")
@@ -166,8 +165,26 @@ class ProgramTab(QTabBar):
         self.bgroup2_1 = QButtonGroup(self)  # buttn gp of tank selecetion
         self.bgroup2_1.setExclusive(False)
         self.bgroup2_2 = []  # QButtonGroup(self)  # buttn gp of food amount selecetion
-        for i in range(self.num_tanks):
-            cb = QCheckBox(f'Tank {i + 1}', self)
+
+        # Select/Unselect all tanks
+        self.select_unselect_all_checkbox = QCheckBox(f'All Tanks', self)
+        self.select_unselect_all_checkbox.toggled.connect(self.select_unselect_all_tanks)
+        self.select_unselect_all_checkbox.setChecked(True)
+        self.bgroup2_1.addButton(self.select_unselect_all_checkbox, 1)
+        grid.addWidget(self.select_unselect_all_checkbox, 0, 0)
+        bg = QButtonGroup(self)
+        for j, name in enumerate(self.num_quantity):
+            b = QRadioButton(name, self)
+            b.setFixedSize(QtCore.QSize(40, 20))
+            b.setCheckable(True)
+            bg.addButton(b, j + 1)
+            grid.addWidget(b, 0, j + 1)
+        bg.buttonClicked.connect(lambda: self.select_unselect_food_amount())
+        self.bgroup2_2.append(bg)
+
+        # Populate tank rows
+        for i in range(1, self.num_tanks + 1):
+            cb = QCheckBox(f'Tank {i}', self)
             cb.setChecked(True)
             self.bgroup2_1.addButton(cb, i + 1)
             grid.addWidget(cb, i, 0)
@@ -221,9 +238,26 @@ class ProgramTab(QTabBar):
         self.program_settings["Time"] = time
         self.update_json()
 
+    def select_unselect_food_amount(self):
+        for idx, (tk, bt) in enumerate(zip(self.bgroup2_1.buttons(), self.bgroup2_2)):
+            if tk.isChecked():
+                for index, i in enumerate(self.bgroup2_2[0].buttons()):
+                    if i.isChecked():
+                        bt.buttons()[index].setChecked(True)
+
+        self.record_log()
+
+    def select_unselect_all_tanks(self):
+        if self.select_unselect_all_checkbox.isChecked():
+            for tank in self.bgroup2_1.buttons():
+                tank.setChecked(True)
+        else:
+            for tank in self.bgroup2_1.buttons():
+                tank.setChecked(False)
+
     def record_log(self, key=None, obj=None):
         if isinstance(obj, QButtonGroup):
-            # For logging feedin or washing
+            # For logging feeding or washing
             for i in obj.buttons():
                 if i.isChecked():
                     self.program_settings[key] = i.text()
@@ -231,18 +265,16 @@ class ProgramTab(QTabBar):
             self.program_settings[key] = obj
         else:
             # For logging food quantity
-            for tk, bt in zip(self.bgroup2_1.buttons(), self.bgroup2_2):
-                if tk.isChecked():
-                    for i in bt.buttons():
-                        if i.isChecked():
-                            # print(int(tk.text().split()[1]) - 1)
-                            # print(i.text())
-                            self.program_settings["Tanks"][int(tk.text().split()[1]) - 1] = i.text()
-                else:
-                    self.program_settings[tk.text()] = None
+            for idx, (tk, bt) in enumerate(zip(self.bgroup2_1.buttons(), self.bgroup2_2)):
+                if idx != 0:
+                    if tk.isChecked():
+                        for i in bt.buttons():
+                            if i.isChecked():
+                                self.program_settings["Tanks"][int(tk.text().split()[1]) - 1] = i.text()
+                    else:
+                        self.program_settings["Tanks"][int(tk.text().split()[1]) - 1] = None
 
         self.update_json()
-
 
     def reset(self, preset):
         self.program_settings = copy(preset)
@@ -280,7 +312,7 @@ class ProgramTab(QTabBar):
                     self.pd_time.setCurrentIndex(0)
             elif "Tanks" in key:
                 for idx, tank in enumerate(val):
-                    tankid = idx
+                    tankid = idx + 1
                     if tank:
                         self.bgroup2_1.buttons()[tankid].setChecked(True)
                         bg = self.bgroup2_2[tankid]
@@ -295,7 +327,6 @@ class ProgramTab(QTabBar):
                         for bt in bg.buttons():
                             bt.setChecked(False)
                         bg.setExclusive(True)
-        # self.tab.repaint()
 
     def duplicate(self):
         self.parent.addprogramtab()
