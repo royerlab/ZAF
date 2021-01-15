@@ -145,6 +145,13 @@ class ProgramTab(QTabBar):
         # Group box right
         # Box for food quantity =================================================
         gpbox2 = QGroupBox("Food Quantity")
+        gpbox2.setStyleSheet(
+            'QGroupBox:title {'
+            'subcontrol-origin: margin;'
+            'subcontrol-position: top center;'
+            'padding-left: 10px;'
+            'padding-right: 10px; }'
+        )
         gpbox2_layout = QVBoxLayout()
         gpbox2.setLayout(gpbox2_layout)
 

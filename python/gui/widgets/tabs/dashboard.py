@@ -1,17 +1,10 @@
-import os
-
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
     QPushButton,
     QVBoxLayout,
-    QLabel,
     QGroupBox,
-    QGridLayout,
-    QWidget, QHBoxLayout, QCheckBox)
-
-import csv
-
-from python.gui.widgets.tabs.program import ProgramTab
+    QWidget, QHBoxLayout, QCheckBox
+)
 
 
 class DashboardTab(QWidget):
@@ -36,29 +29,6 @@ class DashboardTab(QWidget):
         gpbox1_layout = QVBoxLayout()
         gpbox1.setLayout(gpbox1_layout)
         gpbox1_layout.addWidget(self.button_addtab)
-
-        gpbox1_1 = QGroupBox("Save && Load")
-        grid = QGridLayout()
-        # grid.addWidget(QLabel("Save"), 1, 0)
-        # grid.addWidget(QLabel("Load"), 2, 0)
-        self.save_buttons = []
-        self.load_buttons = []
-        for i in range(5):
-            grid.addWidget(QLabel(f"Preset {i + 1}"), 0, i)
-            btn = QPushButton("Save")
-            btn.setCheckable(True)
-            # btn.setObjectName(f"SaveBtn{i}")
-            btn.clicked.connect(lambda: self.save_pgm_tocsv())
-            grid.addWidget(btn, 1, i)
-            self.save_buttons.append(btn)
-            btn = QPushButton("Load")
-            btn.setCheckable(True)
-            # btn.setObjectName(f"LoadBtn{i}")
-            btn.clicked.connect(lambda: self.load_pgm_fromcsv())
-            grid.addWidget(btn, 2, i)
-            self.load_buttons.append(btn)
-        gpbox1_1.setLayout(grid)
-        gpbox1_layout.addWidget(gpbox1_1)
 
         # Emergency Stop
         self.button_emstop = QPushButton("Emergency\nStop", self)
@@ -108,55 +78,3 @@ class DashboardTab(QWidget):
                 self.program_checkboxes_layout.addWidget(checkbox)
 
         self.repaint()
-
-    def save_pgm_tocsv(self):
-        logdata = []
-        for pg in self.parent.tabs:
-            if isinstance(pg, ProgramTab):
-                logdata.append(pg.program_settings)
-
-        # Scan the checked button
-        for id, bt in enumerate(self.save_buttons):
-            if bt.isChecked():
-                bt.setChecked(False)
-                break
-
-        filename = f"Preset{id + 1}"
-        filepath = os.path.join("saved_files", filename + ".csv")
-        with open(filepath, 'w') as file:
-            writer = csv.DictWriter(file, fieldnames=list(logdata[0].keys()))
-            writer.writeheader()
-            for data in logdata:
-                writer.writerow(data)
-
-        self.dialogbox.setText(f"Preset {id + 1} is saved.")
-        self.statusBar.showMessage(f"Preset {id + 1} is saved.")
-        self.repaint()
-
-    def load_pgm_fromcsv(self):
-        # Scan the checked button
-        for id, bt in enumerate(self.load_buttons):
-            if bt.isChecked():
-                bt.setChecked(False)
-                break
-
-        filename = f"Preset{id + 1}"
-        filepath = os.path.join("saved_files", filename + ".csv")
-        data = []
-        # try:
-        with open(filepath, newline="") as file:
-            reader = csv.DictReader(file)
-            for i in reader:
-                data.append(i)
-
-        # Reconstruct program
-        self.parent.reconstruct_program(data)
-
-        self.dialogbox.setText(f"Preset {id + 1} is loaded.")
-        self.statusBar.showMessage(f"Preset {id + 1} is loaded.")
-        # except:
-        #     self.dialogbox.setText(f"{filename} was not found.")
-
-        self.repaint()
-
-

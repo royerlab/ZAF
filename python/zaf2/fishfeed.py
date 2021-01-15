@@ -1,8 +1,9 @@
 import datetime
 from time import sleep
 from RPi import GPIO
-from context import Context
 from arbol.arbol import lprint, section
+
+from python.zaf2.context import Context
 
 
 @section('initialize function')

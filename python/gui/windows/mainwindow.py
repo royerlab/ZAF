@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import (
     QMainWindow,
-    QStatusBar)
+    QStatusBar, QDesktopWidget)
 
 from python.gui.widgets.tabmanager import TabManager
 
@@ -20,5 +20,7 @@ class MainWindow(QMainWindow):
 
         self.tab_manager = TabManager(self, self.statusBar)
         self.setCentralWidget(self.tab_manager)
+
+        self.move(0, -5)
 
         self.show()
