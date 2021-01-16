@@ -1,5 +1,6 @@
 import json
 import os
+import threading
 from copy import copy
 
 from PyQt5 import QtCore
@@ -14,13 +15,15 @@ from PyQt5.QtWidgets import (
     QScrollArea,
     QTabBar,
     QHBoxLayout, QRadioButton)
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, pyqtSignal, QThread
 
 from python.gui.widgets.worker import Worker
 from python.zaf2.fishfeed import run
 
 
 class ProgramTab(QTabBar):
+    early_stop_signal = pyqtSignal()
+
     def __init__(self, parent, name=None):
         super().__init__()
         self.parent = parent
@@ -363,27 +366,28 @@ class ProgramTab(QTabBar):
         self.parent.status_bar.showMessage(f"{self.name} is done.")
 
     def start_program(self):
-        self.update_json()
+        if self.is_running:
+            self.early_stop_signal.emit()
+            self.is_running = False
+        else:
+            self.update_json()
 
-        worker = Worker(
-            run
-        )  # Any other args, kwargs are passed to the run function
+            self.worker = Worker(
+                run
+            )  # Any other args, kwargs are passed to the run function
 
-        # worker.signals.result.connect(self.result_callback)
-        worker.signals.finished.connect(self.thread_complete)
-        worker.signals.progress.connect(self.progress_fn)
+            # worker.signals.result.connect(self.result_callback)
+            self.early_stop_signal.connect(self.worker.set_early_stop)
+            self.worker.signals.finished.connect(self.thread_complete)
+            self.worker.signals.progress.connect(self.progress_fn)
 
-        self.parent.log_tab.clear_activity()
+            self.parent.log_tab.clear_activity()
 
-        # Execute
-        self.parent.threadpool.start(worker)
+            # Execute
+            self.parent.threadpool.start(self.worker)
 
-        self.is_running = True
-        self.parent.log_tab.program_name_label.setText(f"{self.name} is running now")
-        self.parent.status_bar.showMessage(f"{self.name} is running now...")
-        self.button_startstop.setText("Running")
-        self.button_startstop.setEnabled(False)
-
-
-
-
+            self.is_running = True
+            self.parent.log_tab.program_name_label.setText(f"{self.name} is running now")
+            self.parent.status_bar.showMessage(f"{self.name} is running now...")
+            self.button_startstop.setText("Stop")
+            # self.button_startstop.setEnabled(False)

@@ -30,11 +30,11 @@ class DashboardTab(QWidget):
         gpbox1.setLayout(gpbox1_layout)
         gpbox1_layout.addWidget(self.button_addtab)
 
-        # Emergency Stop
-        self.button_emstop = QPushButton("Emergency\nStop", self)
-        self.button_emstop.setStyleSheet("QPushButton {color: red; font: bold;}")
-        self.button_emstop.clicked.connect(lambda: self.status_bar.setText("Emergency Stop!"))
-        gpbox1_layout.addWidget(self.button_emstop)
+        # # Emergency Stop
+        # self.button_emstop = QPushButton("Emergency\nStop", self)
+        # self.button_emstop.setStyleSheet("QPushButton {color: red; font: bold;}")
+        # self.button_emstop.clicked.connect(lambda: self.status_bar.setText("Emergency Stop!"))
+        # gpbox1_layout.addWidget(self.button_emstop)
 
         self.exit_button = QPushButton("Exit ZAF", self)
         self.exit_button.clicked.connect(lambda: self.parent.parent.app.quit())

@@ -17,6 +17,8 @@ class Singleton(type):
 class Context(object):
     __metaclass__ = Singleton
 
+    early_stop = False
+
     food_servo = 5
 
     water_out1 = 4
@@ -37,27 +39,39 @@ class Context(object):
 
     @classmethod
     def initialize(cls):
-        cls.control_box.initialize()
+        if cls.early_stop:
+            exit(1)
+        else:
+            cls.control_box.initialize()
 
     @classmethod
     def check_water_sensor(cls):
-        if GPIO.input(cls.water_sensor) == GPIO.LOW:
-            lprint("no water warning by sensor")
-            cls.control_box.set_pwm(cls.safety_pump, 0)
+        if cls.early_stop:
+            exit(1)
         else:
-            lprint("WATER WARNING by sensor")
-            cls.control_box.set_pwm(cls.safety_pump, 255)
+            if GPIO.input(cls.water_sensor) == GPIO.LOW:
+                lprint("no water warning by sensor")
+                cls.control_box.set_pwm(cls.safety_pump, 0)
+            else:
+                lprint("WATER WARNING by sensor")
+                cls.control_box.set_pwm(cls.safety_pump, 255)
 
     @classmethod
     def run_pump(cls, index, duration=1):
-        cls.control_box.set_pwm(index, 255)
-        sleep(duration)
-        cls.control_box.set_pwm(index, 0)
+        if cls.early_stop:
+            exit(1)
+        else:
+            cls.control_box.set_pwm(index, 255)
+            sleep(duration)
+            cls.control_box.set_pwm(index, 0)
 
     @classmethod
     def rotate_food_servo(cls, angle):
-        if angle < 0 or angle > 180:
-            raise ValueError("angle argument has to be between 0, 180")
+        if cls.early_stop:
+            exit(1)
+        else:
+            if angle < 0 or angle > 180:
+                raise ValueError("angle argument has to be between 0, 180")
 
-        cls.control_box.set_pwm(cls.food_servo, angle)
-        sleep(1)
+            cls.control_box.set_pwm(cls.food_servo, angle)
+            sleep(1)

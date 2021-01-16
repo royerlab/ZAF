@@ -3,6 +3,8 @@ import traceback
 
 from PyQt5.QtCore import QRunnable, pyqtSignal, QObject, pyqtSlot
 
+from python.zaf2.context import Context
+
 
 class WorkerSignals(QObject):
     '''
@@ -28,6 +30,7 @@ class WorkerSignals(QObject):
     error = pyqtSignal(tuple)
     result = pyqtSignal(object)
     progress = pyqtSignal(str)
+    early_stop = pyqtSignal()
 
 
 class Worker(QRunnable):
@@ -47,6 +50,8 @@ class Worker(QRunnable):
     def __init__(self, fn, *args, **kwargs):
         super(Worker, self).__init__()
 
+        self.early_stop = False
+
         # Store constructor arguments (re-used for processing)
         self.fn = fn
         self.args = args
@@ -55,6 +60,7 @@ class Worker(QRunnable):
 
         # Add the callback to our kwargs
         self.kwargs['progress_callback'] = self.signals.progress
+        self.kwargs['check_early_stop'] = self.check_early_stop
 
     @pyqtSlot()
     def run(self):
@@ -64,12 +70,12 @@ class Worker(QRunnable):
 
         # Retrieve args/kwargs here; and fire processing using them
         try:
-            result = self.fn(*self.args, **self.kwargs)
-        except Exception:
-            traceback.print_exc()
-            exctype, value = sys.exc_info()[:2]
-            self.signals.error.emit((exctype, value, traceback.format_exc()))
-        else:
-            self.signals.result.emit(result)  # Return the result of the processing
+            self.fn(*self.args, **self.kwargs)
         finally:
             self.signals.finished.emit()  # Done
+
+    def check_early_stop(self):
+        return self.early_stop
+
+    def set_early_stop(self):
+        self.early_stop = True
