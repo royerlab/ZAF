@@ -21,9 +21,9 @@ class Context(object):
 
     food_servo = 5
 
-    water_out1 = 4
+    water_out1 = 0
     water_out2 = 3
-    water_in = 2
+    water_in = 6
 
     air_pump = 1
     safety_pump = 0
