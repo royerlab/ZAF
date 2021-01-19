@@ -1,23 +1,26 @@
 import datetime
 from time import sleep
 from RPi import GPIO
-from context import Context
 from arbol.arbol import lprint, section
+
+from python.zaf2.context import Context
 
 
 @section('initialize function')
 def initialize():
     Context.initialize()
 
-    Context.DAY, Context.TIME = datetime.datetime.today().strftime('%Y-%m-%d %H:%M:%S').split()
-    # Initialize water sensor
-    GPIO.setmode(GPIO.BCM)
-    GPIO.setup(Context.water_sensor, GPIO.OUT)
-    GPIO.output(Context.water_sensor, GPIO.LOW)
-    sleep(0.05)
-    GPIO.setup(Context.water_sensor, GPIO.IN)
+    if not Context.early_stop:
+        Context.DAY, Context.TIME = datetime.datetime.today().strftime('%Y-%m-%d %H:%M:%S').split()
+        # Initialize water sensor
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setup(Context.water_sensor, GPIO.OUT)
+        GPIO.output(Context.water_sensor, GPIO.LOW)
+        sleep(0.05)
+        GPIO.setup(Context.water_sensor, GPIO.IN)
 
-    lprint("initialized")
+        lprint("initialized")
+
 
 @section('general water priming function')
 def general_priming(valves_in_use_feeding):
@@ -137,18 +140,20 @@ def air_cleaning(valves_in_use_feeding):
 
 @section('finalize function')
 def finalize():
-    Context.control_box.set_pwm(Context.safety_pump, 0)
-    lprint(Context.DAY, Context.TIME, Context.STATUS)
+    if not Context.early_stop:
+        Context.control_box.set_pwm(Context.safety_pump, 0)
+        lprint(Context.DAY, Context.TIME, Context.STATUS)
 
-    lprint("finalized")
+        lprint("finalized")
 
 
-def run():
+def run(progress_callback, check_early_stop):
     valves_in_use_feeding = [8]
 
     try:
         # initialize ports
-        initialize()
+        if not check_early_stop():
+            initialize()
 
         # clean all the tube with water
         general_priming(valves_in_use_feeding)
@@ -180,7 +185,8 @@ def run():
         print("\nCtrl-C pressed.  Program exiting...")
     finally:
         # finalize
-        finalize()
+        if not check_early_stop():
+            finalize()
 
 
 if __name__ == '__main__':
