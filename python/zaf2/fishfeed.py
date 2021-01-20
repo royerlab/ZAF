@@ -144,7 +144,7 @@ def finalize():
 
 
 def run():
-    valves_in_use_feeding = [8]
+    valves_in_use_feeding = [24]
 
     try:
         # initialize ports
