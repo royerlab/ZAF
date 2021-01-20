@@ -1,21 +1,26 @@
 from PyQt5.QtWidgets import (
     QMainWindow,
-    QStatusBar)
+    QStatusBar, QDesktopWidget)
 
 from python.gui.widgets.tabmanager import TabManager
 
 
 class MainWindow(QMainWindow):
-    def __init__(self):
+    def __init__(self, app):
         super().__init__()
-        self.setWindowTitle('ZAF 2.0')
-        self.setGeometry(0, 0, 800, 480)
-        self.setFixedSize(800, 480)
+        self.app = app
+
+        self.setWindowTitle('ZAF+')
+        self.setGeometry(0, 0, 640, 455)
+        self.setFixedSize(640, 455)
 
         self.statusBar = QStatusBar()
+        self.statusBar.showMessage("Welcome to ZAF+")
         self.setStatusBar(self.statusBar)
 
-        self.content = TabManager(self.statusBar)
-        self.setCentralWidget(self.content)
+        self.tab_manager = TabManager(self, self.statusBar)
+        self.setCentralWidget(self.tab_manager)
+
+        self.move(0, -5)
 
         self.show()
