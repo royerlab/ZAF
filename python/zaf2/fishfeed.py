@@ -32,6 +32,16 @@ def general_priming(valves_in_use_feeding):
 
     lprint("General_priming_done")
 
+@section('general water priming function')
+def general_priming(valves_in_use_feeding):
+    for valve in valves_in_use_feeding:
+        Context.control_box.open_valve(valve)
+        Context.run_pump(Context.water_in, duration=0.5)
+        Context.run_pump(Context.water_out1, duration=4)
+        Context.control_box.close_valve(valve)
+
+    lprint("General_priming_done")
+
 
 @section('priming function')
 def priming(valves_in_use_feeding):
@@ -148,12 +158,15 @@ def finalize():
 
 
 def run(progress_callback, check_early_stop):
-    valves_in_use_feeding = [8]
+    valves_in_use_feeding = [24]
 
     try:
         # initialize ports
         if not check_early_stop():
             initialize()
+
+        # clean all the tube with water
+        general_priming(valves_in_use_feeding)
 
         # clean all the tube with water
         general_priming(valves_in_use_feeding)
