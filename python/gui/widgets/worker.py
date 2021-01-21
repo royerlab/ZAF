@@ -57,7 +57,6 @@ class Worker(QRunnable):
         self.args = args
         self.kwargs = kwargs
         self.signals = WorkerSignals()
-
         # Add the callback to our kwargs
         self.kwargs['progress_callback'] = self.signals.progress
         self.kwargs['check_early_stop'] = self.check_early_stop

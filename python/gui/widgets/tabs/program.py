@@ -376,6 +376,8 @@ class ProgramTab(QTabBar):
                 run
             )  # Any other args, kwargs are passed to the run function
 
+            self.worker.kwargs['food_amounts'] = self.program_settings["Tanks"]
+
             # worker.signals.result.connect(self.result_callback)
             self.early_stop_signal.connect(self.worker.set_early_stop)
             self.worker.signals.finished.connect(self.thread_complete)
