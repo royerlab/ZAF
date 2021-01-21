@@ -1,4 +1,6 @@
 import datetime
+import json
+import sys
 from time import sleep
 from RPi import GPIO
 from arbol.arbol import lprint, section
@@ -215,4 +217,12 @@ def fake_check_early_stop():
 
 
 if __name__ == '__main__':
-    run(None, fake_check_early_stop, food_amounts=[24])
+
+    json_path = sys.argv[1]
+
+    with open(json_path, "r") as read_file:
+        data = json.load(read_file)
+
+        run(None, fake_check_early_stop, food_amounts=data["Tanks"])
+
+    # run(None, fake_check_early_stop, food_amounts=[4])

@@ -1,6 +1,5 @@
 import json
 import os
-import threading
 from copy import copy
 
 from PyQt5 import QtCore
@@ -15,7 +14,7 @@ from PyQt5.QtWidgets import (
     QScrollArea,
     QTabBar,
     QHBoxLayout, QRadioButton)
-from PyQt5.QtCore import Qt, pyqtSignal, QThread
+from PyQt5.QtCore import Qt, pyqtSignal
 
 from python.gui.widgets.worker import Worker
 from python.zaf2.fishfeed import run
@@ -29,12 +28,15 @@ class ProgramTab(QTabBar):
         self.parent = parent
         self.name = name
 
+        self.cron_job = None
+
         self.layout = QHBoxLayout()
 
         self.setMovable(True)
         self.is_running = False
         self.is_enabled_checkbox = QCheckBox(self.name)
-        self.is_enabled_checkbox.stateChanged.connect(lambda: self.record_log("Enabled", self.is_enabled_checkbox.isChecked()))
+        self.is_enabled_checkbox.stateChanged.connect(
+            lambda: self.record_log("Enabled", self.is_enabled_checkbox.isChecked()))
 
         self.num_tanks = 30
         self.num_quantity = ["1", "2", "3", "4"]
@@ -87,6 +89,7 @@ class ProgramTab(QTabBar):
         self.button_feeding.setCheckable(True)
         self.button_feeding.setChecked(True)
         self.button_washing = QRadioButton("Only washing", self)
+        self.button_washing.setEnabled(False)
         self.button_washing.setCheckable(True)
 
         self.bgroup1_1.addButton(self.button_feeding, 1)
@@ -138,7 +141,8 @@ class ProgramTab(QTabBar):
         for h in range(24):
             for m in range(2):
                 self.pd_time.addItem(f'{h // 12 * 12 + h % 12} : {m * 30 :02d} {"AM" if h < 12 else "PM"}')
-        self.pd_time.currentIndexChanged.connect(lambda: self.update_active_days())
+        self.pd_time.currentIndexChanged.connect(lambda: self.update_time())
+        self.update_time()
         gpbox1_2_1_layout = QVBoxLayout()
         gpbox1_2_1_layout.addWidget(self.pd_time)
         gpbox1_2_1.setLayout(gpbox1_2_1_layout)
@@ -232,13 +236,17 @@ class ProgramTab(QTabBar):
         self.repaint()
         self.update_active_days()
 
+    def update_time(self):
+        time = self.pd_time.currentText()
+        self.program_settings["Time"] = time
+        self.update_json()
+
     def update_active_days(self):
         checked_dow = [i.isChecked() for i in self.bgroup1_2.buttons()]
         dow = [self.button_dow[i][:3] for i, ii in enumerate(checked_dow) if ii and self.button_dow[i] != "Everyday"]
-        time = self.pd_time.currentText()
+
         self.parent.tabs[0].update_program_list()
         self.program_settings["Day"] = dow
-        self.program_settings["Time"] = time
         self.update_json()
 
     def select_unselect_food_amount(self):
@@ -336,6 +344,10 @@ class ProgramTab(QTabBar):
         self.parent.tabs[-1].reset(self.program_settings)
 
     def delete_tab(self):
+        # Delete the associated crontab job
+        self.cron.remove(self.cron.find_comment(self.name))
+        self.cron.write()
+
         # Scan for the current tab
         for id, tab in enumerate(self.parent.tabs):
             if tab.name == self.name:
@@ -354,6 +366,8 @@ class ProgramTab(QTabBar):
         # Writing to sample.json
         with open(self.json_path, "w") as outfile:
             outfile.write(json_object)
+
+        self.parent.update_crontab_job()
 
     def progress_fn(self, log_str):
         self.parent.log_tab.infoTextBox.insertPlainText(log_str)
