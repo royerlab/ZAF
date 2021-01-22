@@ -52,7 +52,8 @@ class DashboardTab(QWidget):
                 self.programs_list.append(tab.name)
                 checkbox = QCheckBox(tab.name)
                 checkbox.setChecked(tab.is_enabled_checkbox.isChecked())
-                checkbox.stateChanged.connect(lambda: tab.is_enabled_checkbox.setChecked(checkbox.isChecked()))
+                checkbox.stateChanged.connect(tab.toggle_program_enabled)
+
                 self.program_checkboxes_list.append(checkbox)
                 self.program_checkboxes_layout.addWidget(checkbox)
 
@@ -73,7 +74,8 @@ class DashboardTab(QWidget):
                 self.programs_list.append(tab.name)
                 checkbox = QCheckBox(tab.name)
                 checkbox.setChecked(tab.is_enabled_checkbox.isChecked())
-                checkbox.stateChanged.connect(lambda: tab.is_enabled_checkbox.setChecked(checkbox.isChecked()))
+                checkbox.stateChanged.connect(tab.toggle_program_enabled)
+                # checkbox.stateChanged.connect(lambda: tab.is_enabled_checkbox.setChecked(checkbox.isChecked()))
                 self.program_checkboxes_list.append(checkbox)
                 self.program_checkboxes_layout.addWidget(checkbox)
 

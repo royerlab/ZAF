@@ -125,7 +125,7 @@ class TabManager(QTabWidget):
 
         for program_tab in self.program_tabs:
 
-            if program_tab.program_settings["Day"] is not None:
+            if program_tab.program_settings["Day"] is not None and program_tab.program_settings["Enabled"]:
 
                 hour, _, minute, _ = program_tab.program_settings["Time"].split()
 
@@ -141,4 +141,4 @@ class TabManager(QTabWidget):
                 if dow:
                     program_tab.cron_job.dow.on(*dow)
 
-                self.cron.write()
+        self.cron.write()

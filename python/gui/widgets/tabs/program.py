@@ -35,8 +35,6 @@ class ProgramTab(QTabBar):
         self.setMovable(True)
         self.is_running = False
         self.is_enabled_checkbox = QCheckBox(self.name)
-        self.is_enabled_checkbox.stateChanged.connect(
-            lambda: self.record_log("Enabled", self.is_enabled_checkbox.isChecked()))
 
         self.num_tanks = 30
         self.num_quantity = ["1", "2", "3", "4"]
@@ -220,7 +218,8 @@ class ProgramTab(QTabBar):
     def json_path(self):
         return f'/home/pi/Dev/prod/zaf_data/{self.name}.json'
 
-    def update_isactive(self):
+    def toggle_program_enabled(self):
+        self.is_enabled_checkbox.setChecked(not self.is_enabled_checkbox.isChecked())
         self.program_settings["Enabled"] = self.is_enabled_checkbox.isChecked()
         self.update_json()
 
