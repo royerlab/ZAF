@@ -130,7 +130,7 @@ class TabManager(QTabWidget):
                 hour, _, minute, _ = program_tab.program_settings["Time"].split()
 
                 program_tab.cron_job = self.cron.new(
-                    command=f'python3 /home/pi/Dev/prod/ZAF/python/zaf2/fishfeed.py {program_tab.json_path}',
+                    command=f'cd Dev/prod/ZAF && python3 -m python.zaf2.fishfeed {program_tab.json_path}',
                     comment=program_tab.name
                 )
                 program_tab.cron_job.hour.on(hour)

@@ -187,7 +187,7 @@ def run(progress_callback, check_early_stop, food_amounts=None):
             feeder.priming([valve])
 
             # prepare food
-            feeder.prepare(food_amounts[valve])
+            feeder.prepare(int(food_amounts[valve]))
 
             # open the current right valve
             Context.control_box.open_valve(valve)
