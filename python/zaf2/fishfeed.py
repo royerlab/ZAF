@@ -44,16 +44,6 @@ class FishFeed:
 
         lprint("General_priming_done")
 
-    @section('general water priming function')
-    def general_priming(self):
-        for valve in self.valves_in_use_feeding:
-            Context.control_box.open_valve(valve)
-            Context.run_pump(Context.water_in, duration=0.5)
-            Context.run_pump(Context.water_out1, duration=4)
-            Context.control_box.close_valve(valve)
-
-        lprint("General_priming_done")
-
     @section('priming function')
     def priming(self, valves_in_use_feeding):
         # Open all valves
