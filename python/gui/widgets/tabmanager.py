@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import (
     QTabWidget,
 )
 from PyQt5.QtCore import QThreadPool
+from crontab import CronTab
 
 from python.gui.widgets.tabs.dashboard import DashboardTab
 from python.gui.widgets.tabs.logtab import LogTab
@@ -22,9 +23,12 @@ class TabManager(QTabWidget):
         self.threadpool = QThreadPool()
         self.status_bar = status_bar
 
+        self.cron = CronTab(user='pi')
+
         self.only_valid_files = []
         self.active_tabs = []
         self.tabs = []
+        self.program_tabs = []
 
         self.dashboard_tab = DashboardTab(self)
         self.tabs.append(self.dashboard_tab)
@@ -47,9 +51,11 @@ class TabManager(QTabWidget):
                 data = json.load(json_file)
 
                 tab1 = ProgramTab(self, name=data["Program_name"])
+                self.tabs.append(tab1)
+                self.program_tabs.append(tab1)
+
                 tab1.reset(data)
 
-                self.tabs.append(tab1)
                 self.addTab(tab1, tab1.name)
 
         self.check_active_tabs()
@@ -72,6 +78,7 @@ class TabManager(QTabWidget):
         tab1 = ProgramTab(self, name=name)
 
         self.tabs.append(tab1)
+        self.program_tabs.append(tab1)
         self.addTab(tab1, tab1.name)
 
         self.check_active_tabs()
@@ -111,3 +118,27 @@ class TabManager(QTabWidget):
         self.only_valid_files = [
             join(json_folder_path, f) for f in listdir(json_folder_path) if isfile(join(json_folder_path, f)) and "json" in f
         ]
+
+    def update_crontab_job(self):
+
+        self.cron.remove_all()
+
+        for program_tab in self.program_tabs:
+
+            if program_tab.program_settings["Day"] is not None and program_tab.program_settings["Enabled"]:
+
+                hour, _, minute, _ = program_tab.program_settings["Time"].split()
+
+                program_tab.cron_job = self.cron.new(
+                    command=f'cd Dev/prod/ZAF && python3 -m python.zaf2.fishfeed {program_tab.json_path}',
+                    comment=program_tab.name
+                )
+                program_tab.cron_job.hour.on(hour)
+                program_tab.cron_job.minute.on(minute)
+
+                dow = [day.upper() for day in program_tab.program_settings["Day"]]
+
+                if dow:
+                    program_tab.cron_job.dow.on(*dow)
+
+        self.cron.write()
