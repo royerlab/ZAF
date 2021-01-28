@@ -45,9 +45,6 @@ def priming(valves_in_use_feeding):
             Context.run_pump(Context.water_out1, duration=3)
         Context.control_box.close_valve(valve)
 
-    # # Close all valves
-    # for valve in valves_in_use:
-    #     Context.control_box.close_valve(valve)
 
     lprint("pumps primed")
 
