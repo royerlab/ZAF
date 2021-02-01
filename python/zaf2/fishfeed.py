@@ -168,9 +168,6 @@ def run(progress_callback, check_early_stop, food_amounts=None):
         # clean all the tube with water
         feeder.general_priming()
 
-        # clean all the tube with water
-        feeder.general_priming()
-
         # Run feeding sequence for each tank
         for valve in valves_in_use_feeding:
             # priming pumps
