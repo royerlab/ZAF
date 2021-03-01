@@ -154,42 +154,50 @@ class FishFeed:
             lprint("finalized")
 
 
-def run(progress_callback, check_early_stop, food_amounts=None):
+def run(progress_callback, check_early_stop, food_amounts=None, program_type="Only washing"):
 
     valves_in_use_feeding = [i for i in range(len(food_amounts)) if food_amounts[i] is not None]
 
     feeder = FishFeed(progress_callback, check_early_stop, valves_in_use_feeding=valves_in_use_feeding)
 
     try:
-        # initialize ports
-        if not feeder.check_early_stop():
-            feeder.initialize()
-
-        # clean all the tube with water
-        feeder.general_priming()
-
-        # Run feeding sequence for each tank
-        for valve in valves_in_use_feeding:
-            # priming pumps
-            feeder.priming([valve])
-
-            # prepare food
-            feeder.prepare(int(food_amounts[valve]))
-
-            # open the current right valve
-            Context.control_box.open_valve(valve)
-
-            # deliver food to containers
-            feeder.stream()
-
+        if program_type == "Only washing":
+            # initialize ports
+            if not feeder.check_early_stop():
+                feeder.initialize()
+                
             # clean the tank
             feeder.clean()
+        else:
+            # initialize ports
+            if not feeder.check_early_stop():
+                feeder.initialize()
 
-            # close the opened valve
-            Context.control_box.close_valve(valve)
+            # clean all the tube with water
+            feeder.general_priming()
 
-        # clean all the tube with air
-        feeder.air_cleaning()
+            # Run feeding sequence for each tank
+            for valve in valves_in_use_feeding:
+                # priming pumps
+                feeder.priming([valve])
+
+                # prepare food
+                feeder.prepare(int(food_amounts[valve]))
+
+                # open the current right valve
+                Context.control_box.open_valve(valve)
+
+                # deliver food to containers
+                feeder.stream()
+
+                # clean the tank
+                feeder.clean()
+
+                # close the opened valve
+                Context.control_box.close_valve(valve)
+
+            # clean all the tube with air
+            feeder.air_cleaning()
 
     except KeyboardInterrupt:
         print("\nCtrl-C pressed.  Program exiting...")
@@ -210,6 +218,6 @@ if __name__ == '__main__':
     with open(json_path, "r") as read_file:
         data = json.load(read_file)
 
-        run(None, fake_check_early_stop, food_amounts=data["Tanks"])
+        run(None, fake_check_early_stop, food_amounts=data["Tanks"], program_type=data["Type"])
 
     # run(None, fake_check_early_stop, food_amounts=[4])
