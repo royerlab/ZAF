@@ -41,7 +41,7 @@ class ProgramTab(QTabBar):
         self.program_settings = {
             "Program_name": self.name,
             "Enabled": self.is_enabled_checkbox.isChecked(),
-            "Type": "Feeding&Washing",
+            "Type": "Feeding and washing",
             "Day": None,
             "Time": None,
             "Tanks": [None] * self.num_tanks
@@ -87,7 +87,7 @@ class ProgramTab(QTabBar):
         self.button_feeding.setCheckable(True)
         self.button_feeding.setChecked(True)
         self.button_washing = QRadioButton("Only washing", self)
-        self.button_washing.setEnabled(False)
+        # self.button_washing.setEnabled(False)
         self.button_washing.setCheckable(True)
 
         self.bgroup1_1.addButton(self.button_feeding, 1)
@@ -340,12 +340,14 @@ class ProgramTab(QTabBar):
 
     def duplicate(self):
         self.parent.addprogramtab()
-        self.parent.tabs[-1].reset(self.program_settings)
+        duplicated_program_settings = self.program_settings.copy()
+        duplicated_program_settings["Program_name"] = self.parent.tabs[-1].name
+        self.parent.tabs[-1].reset(duplicated_program_settings)
 
     def delete_tab(self):
         # Delete the associated crontab job
-        self.cron.remove(self.cron.find_comment(self.name))
-        self.cron.write()
+        self.parent.cron.remove(self.parent.cron.find_comment(self.name))
+        self.parent.cron.write()
 
         # Scan for the current tab
         for id, tab in enumerate(self.parent.tabs):
@@ -390,6 +392,7 @@ class ProgramTab(QTabBar):
             )  # Any other args, kwargs are passed to the run function
 
             self.worker.kwargs['food_amounts'] = self.program_settings["Tanks"]
+            self.worker.kwargs['program_type'] = self.program_settings["Type"]
 
             # worker.signals.result.connect(self.result_callback)
             self.early_stop_signal.connect(self.worker.set_early_stop)
