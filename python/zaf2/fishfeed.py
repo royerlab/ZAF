@@ -165,9 +165,26 @@ def run(progress_callback, check_early_stop, food_amounts=None, program_type="On
             # initialize ports
             if not feeder.check_early_stop():
                 feeder.initialize()
-                
-            # clean the tank
-            feeder.clean()
+
+            # clean all the tube with water
+            feeder.general_priming()
+
+            # Run feeding sequence for each tank
+            for valve in valves_in_use_feeding:
+                # priming pumps
+                feeder.priming([valve])
+
+                # open the current right valve
+                Context.control_box.open_valve(valve)
+
+                # clean the tank
+                feeder.clean()
+
+                # close the opened valve
+                Context.control_box.close_valve(valve)
+
+            # clean all the tube with air
+            feeder.air_cleaning()
         else:
             # initialize ports
             if not feeder.check_early_stop():
