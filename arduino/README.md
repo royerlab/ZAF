@@ -13,15 +13,15 @@ Nothing else needs to be done.
 
 The ControlBox firmware supports a nearly unlimited of chained arduinos, 
 making the design infinitely scalable. We use serial connections via USB 
-and UART at a speed of at 500'000 bps.
+and UART at a speed of 500'000 bps.
 
 The first arduino in the chain receives messages per USB, messages are forwarded 
 on the Serial1 port. Corresponding (Serial1) TX and RX lines must be connected 
 to the RX and TX lines of the next arduino's Serial2. For the next arduinos in 
-the chain the pattren is repeated: Serial1 to send to the next arduino, 
-Serial2 to receive from the previous arduino. USB is operational for all arduinos 
-in the chain but it is recommended to only inject messages at the beginning of 
-the chain...    
+the chain the pattern is repeated: Serial1 sends to the next arduino, 
+Serial2 receives from the previous arduino. While the USB connection is operational 
+for all arduinos in the chain but it is recommended to only inject messages at the 
+beginning of the chain...    
 
 Pins 38 to 53 are reserved for valves. Pins 2 to 12 are reserved for PWM,
 with pin 7 reserved for 1 servo per arduino. 
