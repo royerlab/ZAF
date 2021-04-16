@@ -16,7 +16,7 @@ from setuptools.command.install import install
 
 
 # Package meta-data.
-NAME = 'ZAF'
+NAME = 'zaf'
 DESCRIPTION = 'ZAF -- an open source fully automated feeder for aquatic facilities'
 URL = 'https://github.com/royerlab/ZAF'
 EMAIL = 'merlin.lange@czbiohub.org, ahmetcan.solak@czbiohub.org, loic.royer@czbiohub.org'
