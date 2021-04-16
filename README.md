@@ -2,7 +2,12 @@
 
 Zebrafish Automated Feeder
 
-Software needed for automated fish feeding system of our fish facility.
+This repository contains:
+
+1. A detailed [wiki](https://github.com/royerlab/ZAF/wiki) with all instructions to build and operate a ZAF system
+2. The software needed for automated fish feeding system of our fish facility.
+
+In the following we provide instructions on how to install the ZAF software on a Raspberry Pi 3 system
 
 ## How to install?
 
@@ -61,4 +66,6 @@ A summary will show on Summary box.
 
 ## How to cite this work?
 
-TBA.
+*ZAF -- an open source fully automated feeder for aquatic facilities*
+Merlin Lange, AhmetCan Solak, Shruthi Vijaykumar, Hirofumi Kobayashi,  Bin Yang, & Loic A. Royer
+
