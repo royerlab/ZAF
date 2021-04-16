@@ -1,6 +1,6 @@
-# ZAF
+# ZAF | Zebrafish Automated Feeder
 
-Zebrafish Automated Feeder
+In the past few decades, aquatic animals have become popular model organisms in biology, spurring a growing interest in establishing aquatic facilities. Aquatic zebrafish are widely studied and relatively easy to culture using commercial systems. However, a challenging aspect of maintaining aquatic facilities is animal feeding, which is both time- and resource-consuming. To facilitate the implementation of a zebrafish colony in any laboratory, we developed an open-source fully automatic daily feeding system. We named our system ZAF for Zebrafish Automatic Feeder. ZAF is reliable, provides a standardized amount of food to every tank, is cost-efficient and easy to build. The advanced version, ZAF+, allows for the precise control of food distribution as a function of fish density per tank. Here we provide all of the instructions to build the two automatic feeding systems, from the hardware and a friendly user interface to the open-source python code. Importantly, the design is modular and can be scaled depending on user needs. Furthermore, our results confirm that ZAF and ZAF+ do not adversely affect zebrafish culture, enabling fully automatic feeding for any aquatic facility.
 
 This repository contains:
 
