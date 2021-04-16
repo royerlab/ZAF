@@ -16,8 +16,8 @@ In the following we provide instructions on how to install the ZAF software on a
 ## How to install?
 
 ```bash
-git clone https://github.com/royerlab/fishfeed.git
-cd fishfeed
+git clone https://github.com/royerlab/zaf.git
+cd zaf
 pip install -e .
 
 # Check installation
