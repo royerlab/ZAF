@@ -227,10 +227,8 @@ def run(progress_callback, check_early_stop, food_amounts=None, program_type="On
 def fake_check_early_stop():
     return False
 
-
-if __name__ == '__main__':
-
-    json_path = sys.argv[1]
+def main():
+     json_path = sys.argv[1]
 
     with open(json_path, "r") as read_file:
         data = json.load(read_file)
@@ -238,3 +236,9 @@ if __name__ == '__main__':
         run(None, fake_check_early_stop, food_amounts=data["Tanks"], program_type=data["Type"])
 
     # run(None, fake_check_early_stop, food_amounts=[4])
+
+    
+if __name__ == '__main__':
+    main()
+
+   
