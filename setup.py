@@ -127,11 +127,9 @@ setup(
     # If your package is a single module, use this instead of 'packages':
     # py_modules=['mypackage'],
 
-#     entry_points={
-#     'console_scripts': ['zaf=dexp.cli.dexp_main:cli',
-#                         'video=dexp.cli.video_main:cli',
-#                         'install=dexp.cli.install_main:cli']
-#     },
+    entry_points={
+    'console_scripts': ['zaf=python.zaf2.fishfeed']
+    },
     install_requires=REQUIRED,
     extras_require=EXTRAS,
     include_package_data=True,
