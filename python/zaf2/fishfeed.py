@@ -223,12 +223,11 @@ def run(progress_callback, check_early_stop, food_amounts=None, program_type="On
         if not feeder.check_early_stop():
             feeder.finalize()
 
-
 def fake_check_early_stop():
     return False
 
 def main():
-     json_path = sys.argv[1]
+    json_path = sys.argv[1]
 
     with open(json_path, "r") as read_file:
         data = json.load(read_file)

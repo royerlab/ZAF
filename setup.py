@@ -35,7 +35,8 @@ print(f"Version: {VERSION}")
 REQUIRED = [
     'arbol',
     'PyQt5',
-    'crontab'
+    'crontab',
+    'RPi'
 ]
 
 # What packages are optional?
