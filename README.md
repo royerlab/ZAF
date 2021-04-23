@@ -13,60 +13,25 @@ This repository contains:
 
 In the following we provide instructions on how to install the ZAF software on a Raspberry Pi 3 system
 
-## How to install?
+## How to install and use?
 
 ```bash
+# Install dependencies
+sudo apt install python3-pyqt5
+python3 -m pip install python-crontab==2.5.1 arbol==2020.11.6
+
+# Get ZAF+ software
+mkdir -p ~/Dev/prod/zaf_data
+cd Dev/prod/
 git clone https://github.com/royerlab/zaf.git
 cd zaf
-pip install -e .
 
-# Check installation
-fishfeed -h
+# Start the ZAF+ software
+python3 -m python.gui.gui
+
+# Run the ZAF software
+python -m python.zaf1.cli run
 ```
-
-## How to use?
-
-```bash
-# To check details of last 5 run
-fishfeed last5
-
-# To check details of last 50 run
-fishfeed last50
-
-# To run feeding
-fishfeed run
-```
-
-## GUI for ZAF
-
-### Dependency
-PyQt5
-
-
-Use Front Panel to control across all programs.
-
-**Add program** to add more programs
-
-Active programs window shows the programs and day&time that set to run.
-
-Save & load programs saves and loads programs in csv format.
-
-Dialob box displays current status of ZAF2. 
-
-![Alt text](python/gui/screenshots/ScreenShot1.png?raw=true "ScreenShot")
-
-On/Off button to switch on and off the program.
-
-Select whether to feed fish or wash tanks.
-
-Select day and time to run the program.
-
-Check tank number and quantity that will be fed to each tank.
-
-A summary will show on Summary box.
-
-![Alt text](python/gui/screenshots/ScreenShot2.png?raw=true "ScreenShot")
-
 
 ## How to cite this work?
 
