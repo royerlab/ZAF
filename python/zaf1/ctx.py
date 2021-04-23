@@ -1,4 +1,3 @@
-from picamera import PiCamera
 
 
 class Singleton(type):
@@ -12,14 +11,11 @@ class Singleton(type):
 
 class Ctx(object):
     __metaclass__ = Singleton
-    # camera = PiCamera()
     pwm = None
 
     DAY = None
     TIME = None
     STATUS = None
-
-
 
     # These are servo hat indices
     water_out1 = 13

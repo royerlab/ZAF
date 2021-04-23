@@ -10,10 +10,11 @@ from python.zaf2.context import Context
 
 
 class FishFeed:
-    def __init__(self,
-                 progress_callback,
-                 check_early_stop,
-                 valves_in_use_feeding=None
+    def __init__(
+            self,
+            progress_callback,
+            check_early_stop,
+            valves_in_use_feeding=None
     ):
         self.progress_callback = progress_callback
         self.check_early_stop = check_early_stop
@@ -223,8 +224,10 @@ def run(progress_callback, check_early_stop, food_amounts=None, program_type="On
         if not feeder.check_early_stop():
             feeder.finalize()
 
+
 def fake_check_early_stop():
     return False
+
 
 def main():
     json_path = sys.argv[1]
@@ -239,5 +242,3 @@ def main():
     
 if __name__ == '__main__':
     main()
-
-   
