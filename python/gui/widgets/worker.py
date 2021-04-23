@@ -3,7 +3,7 @@ import traceback
 
 from PyQt5.QtCore import QRunnable, pyqtSignal, QObject, pyqtSlot
 
-from python.zaf2.context import Context
+from python.zaf_plus.context import Context
 
 
 class WorkerSignals(QObject):

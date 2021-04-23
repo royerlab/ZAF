@@ -1,6 +1,6 @@
 from time import sleep
 
-from python.zaf2.control_box import ControlBox
+from python.zaf_plus.control_box import ControlBox
 
 
 def test_initialize():

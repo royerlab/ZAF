@@ -30,11 +30,11 @@ cd zaf
 python3 -m python.gui.gui
 
 # Run the ZAF software
-python -m python.zaf1.cli run
+python -m python.zaf.cli run
 ```
 
 ## How to cite this work?
 
 *ZAF -- an open source fully automated feeder for aquatic facilities*
-Merlin Lange, AhmetCan Solak, Shruthi Vijaykumar, Hirofumi Kobayashi,  Bin Yang, & Loic A. Royer
+Merlin Lange, Ahmet Can Solak, Shruthi Vijaykumar, Hirofumi Kobayashi,  Bin Yang, & Loic A. Royer
 

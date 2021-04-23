@@ -2,8 +2,8 @@ import datetime
 from time import sleep
 from RPi import GPIO
 
-from python.zaf1.PCA9685 import PCA9685
-from python.zaf1.ctx import Ctx
+from python.zaf.PCA9685 import PCA9685
+from python.zaf.ctx import Ctx
 
 
 def initialize():
