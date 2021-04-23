@@ -1,6 +1,6 @@
 import click
 
-from python.zaf1.fishfeed import run_fishfeed
+from python.zaf.fishfeed import run_fishfeed
 
 CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 

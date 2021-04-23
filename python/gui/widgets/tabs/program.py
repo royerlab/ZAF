@@ -17,7 +17,7 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import Qt, pyqtSignal
 
 from python.gui.widgets.worker import Worker
-from python.zaf2.fishfeed import run
+from python.zaf_plus.fishfeed import run
 
 
 class ProgramTab(QTabBar):

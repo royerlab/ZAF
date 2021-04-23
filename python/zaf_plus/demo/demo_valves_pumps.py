@@ -1,7 +1,7 @@
 from time import sleep
 
-from python.zaf2.context import Context
-from python.zaf2.control_box import ControlBox
+from python.zaf_plus.context import Context
+from python.zaf_plus.control_box import ControlBox
 
 
 def demo_valves(valves):

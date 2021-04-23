@@ -2,7 +2,7 @@ from time import sleep
 from RPi import GPIO
 from arbol.arbol import lprint
 
-from python.zaf2.control_box import ControlBox
+from python.zaf_plus.control_box import ControlBox
 
 
 class Singleton(type):
