@@ -2,8 +2,8 @@ import datetime
 from time import sleep
 from RPi import GPIO
 
-from ctx import Ctx
-from PCA9685 import PCA9685
+from python.zaf1.PCA9685 import PCA9685
+from python.zaf1.ctx import Ctx
 
 
 def initialize():
@@ -169,7 +169,7 @@ def check_water_sensor():
         print("WATER WARNING by sensor")
 
 
-def run():
+def run_fishfeed():
 
     try:
         # initialize ports
@@ -203,4 +203,4 @@ def run():
 
 
 if __name__ == '__main__':
-    run()
+    run_fishfeed()

@@ -1,5 +1,7 @@
 import click
 
+from python.zaf1.fishfeed import run_fishfeed
+
 CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 
 
@@ -11,7 +13,7 @@ def fishfeed():
 
 @fishfeed.command()
 def run(**kwargs):
-    fishfeed.run()
+    run_fishfeed()
 
 
 @fishfeed.command()
