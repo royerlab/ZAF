@@ -35,6 +35,6 @@ python -m python.zaf.cli run
 
 ## How to cite this work?
 
-*ZAF -- an open source fully automated feeder for aquatic facilities*
+[*ZAF -- an open source fully automated feeder for aquatic facilities.*](https://doi.org/10.1101/2021.04.28.441879)
 Merlin Lange, Ahmet Can Solak, Shruthi Vijaykumar, Hirofumi Kobayashi,  Bin Yang, & Loic A. Royer
 
