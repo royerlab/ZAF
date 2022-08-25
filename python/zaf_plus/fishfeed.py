@@ -108,7 +108,7 @@ class FishFeed:
         lprint("food water mix streamed")
 
     @section('clean function')
-    def clean(self):
+    def clean(self, valve):
         for _ in range(1):
             # bring clean water to fishfeeder
             Context.check_water_sensor()
@@ -116,7 +116,13 @@ class FishFeed:
             # thrash water from fishfeeder
             Context.check_water_sensor()
             Context.run_pump(Context.water_out1, duration=2)
-        for _ in range(1):
+        for _ in range(4):
+            for _ in range(10):
+                Context.control_box.open_valve(valve)
+                sleep(0.5)
+                Context.control_box.close_valve(valve)
+
+            Context.control_box.open_valve(valve)
             for _ in range(1):
                 # bring clean water to fishfeeder
                 Context.check_water_sensor()
@@ -179,7 +185,7 @@ def run(progress_callback, check_early_stop, food_amounts=None, program_type="On
                 Context.control_box.open_valve(valve)
 
                 # clean the tank
-                feeder.clean()
+                feeder.clean(valve)
 
                 # close the opened valve
                 Context.control_box.close_valve(valve)
@@ -209,7 +215,7 @@ def run(progress_callback, check_early_stop, food_amounts=None, program_type="On
                 feeder.stream()
 
                 # clean the tank
-                feeder.clean()
+                feeder.clean(valve)
 
                 # close the opened valve
                 Context.control_box.close_valve(valve)
